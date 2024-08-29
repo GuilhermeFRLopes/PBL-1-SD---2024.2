@@ -6,20 +6,10 @@
 #include <stdbool.h>
 #include <intelfpgaup/video.h>
 #include <time.h>
+#include <unistd.h>
 
-#define video_BLACK 0x00
-#define video_WHITE 0xFF
-#define video_YELLOW 0xFFFF
-#define video_RED 0xF800
-#define video_GREEN 0x07E0
-#define video_BLUE 0x001F
-#define video_CYAN 0x07FF
-#define video_MAGENTA 0xF81F
-#define video_GREY 0x7BEF
-#define video_PINK 0xFFC0
-#define video_ORANGE 0xFF00
 
-#define BLOCO_TAM 20 // Tamanho de cada quadrado
+#define BLOCO_TAM 10 // Tamanho de cada quadrado
 #define LARGURA_TELA 319 // Tamanho da tela VGA
 #define ALTURA_TELA 239 // Tamanho da tela VGA
 
@@ -34,6 +24,12 @@ typedef struct {
     int pos_x, pos_y;     // Posição da peça no tabuleiro
     Quadrado quadrados[4][4]; // Matriz de quadrados, 4x4 é suficiente para qualquer peça de Tetris
 } Peca;
+
+typedef struct {
+    int largura, altura; // Dimensões do tabuleiro
+    //short cor_fundo;     // Cor de fundo do tabuleiro
+    short matriz[24][31]; // Matriz para armazenar as peças no tabuleiro (20x10)
+} Tabuleiro;
 
 Peca criarPecaL(short cor){
     Peca pecaL;
@@ -56,6 +52,32 @@ Peca criarPecaL(short cor){
     pecaL.quadrados[2][1] = (Quadrado){2, 1, cor, true}; // Quadrado à direita do terceiro
 
     return pecaL;
+}
+
+Tabuleiro criarTabuleiro() {
+    Tabuleiro tab;
+    tab.largura = 30;
+    tab.altura = 25;
+    //tab.cor_fundo =  1;    
+
+    // Inicializa a matriz do tabuleiro com zeros (sem peças)
+    for (int i = 0; i < tab.altura; i++) {
+        for (int j = 0; j < tab.largura; j++) {
+            //tab.matriz[i][j] = tab.cor_fundo;
+        }
+    }
+
+    return tab;
+}
+
+void desenhaTabuleiro(Tabuleiro tab) {
+    for (int i = 0; i < tab.altura; i++) {
+        for (int j = 0; j < tab.largura; j++) {
+            //if (tab.matriz[i][j] != tab.cor_fundo) {
+                video_box(j * BLOCO_TAM, i * BLOCO_TAM, (j + 1) * BLOCO_TAM - 1, (i + 1) * BLOCO_TAM - 1,tab.matriz[i][j]);
+            //}
+        }
+    }
 }
 
 void desenhaPeca(Peca peca) {
@@ -82,9 +104,36 @@ short corAleatoria(){
     return cores[numAleatorio];
 }
 
+void moverPeca(Peca *peca, int dx, int dy) {
+    peca->pos_x += dx;
+    peca->pos_y += dy;
+}
+
+void fixarPeca(Tabuleiro *tab, Peca peca) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (peca.quadrados[i][j].ativo) {
+                // Calcula as coordenadas absolutas no tabuleiro
+                int x = peca.pos_x + j;
+                int y = peca.pos_y + i;
+
+                // Verifica se a posição está dentro dos limites do tabuleiro
+                //if (x >= 0 && x < tab->largura && y >= 0 && y < tab->altura) {
+                    // Fixa a cor do quadrado na matriz do tabuleiro
+                   // tab->matriz[y][x] = peca.quadrados[i][j].cor;
+               // }
+            }
+        }
+    }
+}
+
+
 int main(){
     video_open();    // Inicializa o vídeo
     video_clear();   // Limpa o vídeo
+
+    Tabuleiro tabu;
+    //desenhaTabuleiro(tabu);
 
     // Cria a peça "L" com uma cor aleatória
     short cor = corAleatoria();
@@ -93,10 +142,26 @@ int main(){
     // Desenha a peça "L" na tela
     desenhaPeca(pecaL);
 
+    fixarPeca(&tabu, pecaL);
+
     video_show();    // Mostra o conteúdo na tela
 
     // Mantém a tela atualizada até que o usuário feche
-    while (true) {
+    while (1) {
+
+        
+
+        moverPeca(&pecaL, 0 , 10);
+        video_clear();
+
+
+
+        //Tabuleiro tabu = criarTabuleiro();
+        //desenhaTabuleiro(tabu);
+        
+        desenhaPeca(pecaL);
+        video_show();    
+        sleep(1);
         // Aqui você pode adicionar lógica para movimentar a peça ou outras interações
     }
 
