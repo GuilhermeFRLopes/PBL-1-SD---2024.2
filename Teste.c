@@ -13,6 +13,8 @@
 #define LARGURA_TELA 319 // Tamanho da tela VGA
 #define ALTURA_TELA 239 // Tamanho da tela VGA
 
+
+
 typedef struct {
     int pos_x, pos_y; // Posição relativa do quadrado dentro da peça
     short cor;        // Cor do quadrado
@@ -27,8 +29,8 @@ typedef struct {
 
 typedef struct {
     int largura, altura; // Dimensões do tabuleiro
-    //short cor_fundo;     // Cor de fundo do tabuleiro
-    short matriz[24][31]; // Matriz para armazenar as peças no tabuleiro (20x10)
+    short cor_fundo;     // Cor de fundo do tabuleiro
+    short matriz[319][239]; // Matriz para armazenar as peças no tabuleiro (20x10)
 } Tabuleiro;
 
 Peca criarPecaL(short cor){
@@ -49,21 +51,48 @@ Peca criarPecaL(short cor){
     pecaL.quadrados[0][0] = (Quadrado){0, 0, cor, true}; // Quadrado superior esquerdo
     pecaL.quadrados[1][0] = (Quadrado){1, 0, cor, true}; // Quadrado abaixo do primeiro
     pecaL.quadrados[2][0] = (Quadrado){2, 0, cor, true}; // Quadrado abaixo do segundo
+    //pecaL.quadrados[2][1] = (Quadrado){2, 1, cor, true}; // Quadrado à direita do terceiro
+
+    return pecaL;
+}
+
+Peca criarPecaQ(short cor){
+    Peca pecaL;
+    pecaL.pos_x = (LARGURA_TELA / 2) - (BLOCO_TAM * 1); // Centraliza a peça
+    pecaL.pos_y = 0; // Começa no topo da tela
+    pecaL.tam_x = 3;
+    pecaL.tam_y = 2;
+
+    // Inicializa a matriz de quadrados para a peça "L"
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            pecaL.quadrados[i][j].ativo = false; // Inicializa todos os quadrados como inativos
+        }
+    }
+
+    // Definindo os quadrados ativos para a peça "L"
+    pecaL.quadrados[0][0] = (Quadrado){0, 0, cor, true}; // Quadrado superior esquerdo
+    pecaL.quadrados[1][0] = (Quadrado){1, 0, cor, true}; // Quadrado abaixo do primeiro
+    pecaL.quadrados[2][0] = (Quadrado){2, 0, cor, true}; // Quadrado abaixo do segundo
     pecaL.quadrados[2][1] = (Quadrado){2, 1, cor, true}; // Quadrado à direita do terceiro
+    pecaL.quadrados[1][1] = (Quadrado){1, 1, cor, true};
+    pecaL.quadrados[0][1] = (Quadrado){0, 1, cor, true};
+
+
 
     return pecaL;
 }
 
 Tabuleiro criarTabuleiro() {
     Tabuleiro tab;
-    tab.largura = 30;
-    tab.altura = 25;
-    //tab.cor_fundo =  1;    
+    tab.largura = 319;
+    tab.altura = 239;
+    tab.cor_fundo =  video_WHITE;    
 
     // Inicializa a matriz do tabuleiro com zeros (sem peças)
     for (int i = 0; i < tab.altura; i++) {
         for (int j = 0; j < tab.largura; j++) {
-            //tab.matriz[i][j] = tab.cor_fundo;
+            tab.matriz[i][j] = tab.cor_fundo;
         }
     }
 
@@ -74,7 +103,7 @@ void desenhaTabuleiro(Tabuleiro tab) {
     for (int i = 0; i < tab.altura; i++) {
         for (int j = 0; j < tab.largura; j++) {
             //if (tab.matriz[i][j] != tab.cor_fundo) {
-                video_box(j * BLOCO_TAM, i * BLOCO_TAM, (j + 1) * BLOCO_TAM - 1, (i + 1) * BLOCO_TAM - 1,tab.matriz[i][j]);
+                video_box(j * BLOCO_TAM, i * BLOCO_TAM, (j + 1) * BLOCO_TAM - 1, (i + 1) * BLOCO_TAM - 1, tab.matriz[i][j]);
             //}
         }
     }
@@ -104,9 +133,22 @@ short corAleatoria(){
     return cores[numAleatorio];
 }
 
-void moverPeca(Peca *peca, int dx, int dy) {
-    peca->pos_x += dx;
-    peca->pos_y += dy;
+void moverPeca(Peca *peca, Peca *pecaq,int dx, int dy) {
+    if(peca->pos_y < 200) {
+        peca->pos_x += dx;
+        peca->pos_y += dy;
+        
+
+    } 
+    if (pecaq->pos_y  < 200){
+        pecaq -> pos_x += dx;
+        pecaq -> pos_y += dy + 1;
+    }
+        else if (/*pecaq -> pos_y +2 == peca ->pos_y && */pecaq -> pos_y == 185){
+        peca->pos_x = peca->pos_x;
+        peca->pos_y = peca -> pos_y;
+    }
+
 }
 
 void fixarPeca(Tabuleiro *tab, Peca peca) {
@@ -133,14 +175,16 @@ int main(){
     video_clear();   // Limpa o vídeo
 
     Tabuleiro tabu;
-    //desenhaTabuleiro(tabu);
+    desenhaTabuleiro(tabu);
 
     // Cria a peça "L" com uma cor aleatória
     short cor = corAleatoria();
     Peca pecaL = criarPecaL(cor);
+    Peca pecaq = criarPecaQ(corAleatoria());
 
     // Desenha a peça "L" na tela
     desenhaPeca(pecaL);
+    desenhaPeca(pecaq);
 
     fixarPeca(&tabu, pecaL);
 
@@ -151,7 +195,8 @@ int main(){
 
         
 
-        moverPeca(&pecaL, 0 , 10);
+        moverPeca(&pecaL, &pecaq,0 , 1);
+        //moverPeca(&pecaq, 0 , 2);
         video_clear();
 
 
@@ -160,8 +205,10 @@ int main(){
         //desenhaTabuleiro(tabu);
         
         desenhaPeca(pecaL);
+        desenhaPeca(pecaq);
+
         video_show();    
-        sleep(1);
+        //sleep(1);
         // Aqui você pode adicionar lógica para movimentar a peça ou outras interações
     }
 
