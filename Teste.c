@@ -30,7 +30,7 @@ typedef struct {
 typedef struct {
     int largura, altura; // Dimensões do tabuleiro
     short cor_fundo;     // Cor de fundo do tabuleiro
-    short matriz[319][239]; // Matriz para armazenar as peças no tabuleiro (20x10)
+    Quadrado matriz[LARGURA_TELA][ALTURA_TELA]; // Matriz para armazenar as peças no tabuleiro
 } Tabuleiro;
 
 Peca criarPecaL(short cor){
@@ -51,14 +51,16 @@ Peca criarPecaL(short cor){
     pecaL.quadrados[0][0] = (Quadrado){0, 0, cor, true}; // Quadrado superior esquerdo
     pecaL.quadrados[1][0] = (Quadrado){1, 0, cor, true}; // Quadrado abaixo do primeiro
     pecaL.quadrados[2][0] = (Quadrado){2, 0, cor, true}; // Quadrado abaixo do segundo
-    //pecaL.quadrados[2][1] = (Quadrado){2, 1, cor, true}; // Quadrado à direita do terceiro
+    pecaL.quadrados[2][1] = (Quadrado){2, 1, cor, true}; // Quadrado à direita do terceiro
 
     return pecaL;
 }
 
 Peca criarPecaQ(short cor){
     Peca pecaL;
-    pecaL.pos_x = (LARGURA_TELA / 2) - (BLOCO_TAM * 1); // Centraliza a peça
+    // LARGURA_TELA / 2 = 159.5
+    // BLOCO_TAM * 1 = 10;
+    pecaL.pos_x = (LARGURA_TELA / 2) - (BLOCO_TAM * 1); // Centraliza a peça. Essa conta = 149.5
     pecaL.pos_y = 0; // Começa no topo da tela
     pecaL.tam_x = 3;
     pecaL.tam_y = 2;
@@ -92,7 +94,7 @@ Tabuleiro criarTabuleiro() {
     // Inicializa a matriz do tabuleiro com zeros (sem peças)
     for (int i = 0; i < tab.altura; i++) {
         for (int j = 0; j < tab.largura; j++) {
-            tab.matriz[i][j] = tab.cor_fundo;
+            tab.matriz[i][j] = NULL;
         }
     }
 
@@ -113,13 +115,80 @@ void desenhaPeca(Peca peca) {
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {
             if (peca.quadrados[i][j].ativo) {
+                //posiçao inicial x = 149.5 e y = 0
+                //entao int x = peca.pos_x + j * BLOCO_TAM; é igual a 149.5 + 0 * 10
+                //int y = peca.pos_y + i * BLOCO_TAM; é igual a 0 + 0 * 10
                 int x = peca.pos_x + j * BLOCO_TAM;
                 int y = peca.pos_y + i * BLOCO_TAM;
+                //void video_box (int /*x1*/, int /*y1*/, int /*x2*/, int /*y2*/, short /*color*/);
+                /*
+                x1, y1: coordenadas de um canto do retângulo.
+                x2, y2: coordenadas do canto oposto.
+                color: cor do retângulo.
+                */
                 video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor);
             }
         }
     }
 }
+
+void desenhaPecaTabu(Peca peca, Tabuleiro tabu){
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (peca.quadrados[i][j].ativo) {
+                for (int k = 0; k < BLOCO_TAM; k++){
+                    int x = peca.pos_x + j * BLOCO_TAM;//149 ; i = 0
+                    int y = peca.pos_y + i * BLOCO_TAM;//0; j = 0
+                    tabu.matriz[x + k][y + k] = peca.quadrados[i][j];/
+                }
+            }
+        }
+    }
+}
+
+void desenhaPecaTabu(Peca peca, Tabuleiro *tabu) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (peca.quadrados[i][j].ativo) {
+                // Calcula a posição inicial do quadrado
+                int pos_x_inicial = peca.pos_x + (j * BLOCO_TAM);
+                int pos_y_inicial = peca.pos_y + (i * BLOCO_TAM);
+
+                // Preenche a matriz do tabuleiro com a cor da peça
+                for (int x = 0; x < BLOCO_TAM; x++) {
+                    for (int y = 0; y < BLOCO_TAM; y++) {
+                        // Verifica se a posição está dentro dos limites do tabuleiro
+                        if (pos_x_inicial + x < tabu->largura && pos_y_inicial + y < tabu->altura) {
+                            tabu->matriz[pos_y_inicial + y][pos_x_inicial + x] = peca.quadrados[i][j].cor;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void desenhaPecaTabu(Peca peca, Tabuleiro *tabu) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (peca.quadrados[i][j].ativo) {
+                for (int k = 0; k < BLOCO_TAM; k++) {
+                    for (int l = 0; l < BLOCO_TAM; l++) {
+                        int x = peca.pos_x + j * BLOCO_TAM + l; // Corrigido para usar l
+                        int y = peca.pos_y + i * BLOCO_TAM + k; // Corrigido para usar k
+                        // Verifica se as coordenadas estão dentro dos limites do tabuleiro
+                        if (x >= 0 && x < LARGURA_TELA && y >= 0 && y < ALTURA_TELA) {
+                            tabu->matriz[x][y] = peca.quadrados[i][j]; // Usar ponteiro para tabu
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+//k = 1 149 - 150 - 151 - 152 - 153 - 154 - 155 - 156 - 157 - 158
+                                                                           // 0  - 1    - 2  -  3  -  4  -  5  -  6  -  7  -  8  -  9
 
 short corAleatoria(){
     short cores[]= {video_WHITE, video_YELLOW, video_RED, video_GREEN, video_BLUE, video_CYAN, video_MAGENTA, video_GREY, video_PINK, video_ORANGE};
