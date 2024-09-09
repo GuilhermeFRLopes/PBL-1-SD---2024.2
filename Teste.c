@@ -1,203 +1,88 @@
-/*Claro! Vou completar o código para que você possa criar e desenhar a peça em forma de "L" no monitor VGA. Vou adicionar a lógica para criar a peça, desenhá-la na tela e também incluir um loop para manter a tela atualizada. Aqui está o código completo:
-
-```c*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <intelfpgaup/video.h>
+#include <intelfpgaup/accel.h>
 #include <time.h>
 #include <unistd.h>
 
+#define BLOCO_TAM 10
+#define LARGURA_TELA 300
+#define ALTURA_TELA 200
 
-#define BLOCO_TAM 10 // Tamanho de cada quadrado
-#define LARGURA_TELA 319 // Tamanho da tela VGA
-#define ALTURA_TELA 239 // Tamanho da tela VGA
+// Tamanho para a matriz
+#define COLUNA_TABULEIRO 30
+#define LINHA_TABULEIRO 20
+int acel_rdy, acel_tap, acel_dtap, acel_x, acel_y, acel_z, acel_mg;
 
+// y até o 200 e x até o 300
+// y = 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 180, 190, 200
+// x = 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300
 
+typedef struct
+{
+    bool ocupado[LINHA_TABULEIRO][COLUNA_TABULEIRO]; // Matriz para armazenar o estado das posições
+} Tabuleiro;
 
-typedef struct {
+typedef struct
+{
     int pos_x, pos_y; // Posição relativa do quadrado dentro da peça
     short cor;        // Cor do quadrado
     bool ativo;       // Indica se o quadrado faz parte da peça (ativo ou não)
 } Quadrado;
 
-typedef struct {
-    int tam_x, tam_y;     // Dimensões da peça (número de quadrados)
-    int pos_x, pos_y;     // Posição da peça no tabuleiro
+typedef struct
+{
+    int tam_x, tam_y;         // Dimensões da peça (número de quadrados)
+    int pos_x, pos_y;         // Posição da peça no tabuleiro
     Quadrado quadrados[4][4]; // Matriz de quadrados, 4x4 é suficiente para qualquer peça de Tetris
 } Peca;
 
-/*
-typedef struct {
-    int largura, altura; // Dimensões do tabuleiro
-    short cor_fundo;     // Cor de fundo do tabuleiro
-    Quadrado matriz[LARGURA_TELA][ALTURA_TELA]; // Matriz para armazenar as peças no tabuleiro
-} Tabuleiro;*/
-
-typedef struct {
-    int largura, altura; // Dimensões do tabuleiro
-    short cor_fundo;     // Cor de fundo do tabuleiro
-    Quadrado matriz[20][20]; // Matriz para armazenar as peças no tabuleiro
-} Tabuleiro;
-
-Peca criarPecaL(short cor){
+Peca criarPeca(short cor)
+{
     Peca pecaL;
-    pecaL.pos_x = (115) - (BLOCO_TAM * 1); // Centraliza a peça
-    pecaL.pos_y = 0; // Começa no topo da tela
+    pecaL.pos_x = (LARGURA_TELA / 2) - (BLOCO_TAM * 1); // Centraliza a peça
+    pecaL.pos_y = 0;                                    // Começa no topo da tela
     pecaL.tam_x = 3;
     pecaL.tam_y = 2;
 
-    // Inicializa a matriz de quadrados para a peça "L"
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
+    // Inicializa a matriz de quadrados para a peça
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
             pecaL.quadrados[i][j].ativo = false; // Inicializa todos os quadrados como inativos
         }
     }
 
-    // Definindo os quadrados ativos para a peça "L"
+    // Definindo os quadrados ativos para a peça
     pecaL.quadrados[0][0] = (Quadrado){0, 0, cor, true}; // Quadrado superior esquerdo
     pecaL.quadrados[1][0] = (Quadrado){1, 0, cor, true}; // Quadrado abaixo do primeiro
     pecaL.quadrados[2][0] = (Quadrado){2, 0, cor, true}; // Quadrado abaixo do segundo
-    pecaL.quadrados[2][1] = (Quadrado){2, 1, cor, true}; // Quadrado à direita do terceiro
+    // pecaL.quadrados[2][1] = (Quadrado){2, 1, cor, true}; // Quadrado à direita do terceiro
 
     return pecaL;
 }
 
-Peca criarPecaQ(short cor){
-    Peca pecaL;
-    // LARGURA_TELA / 2 = 159.5
-    // BLOCO_TAM * 1 = 10;
-    pecaL.pos_x = (LARGURA_TELA / 2) - (BLOCO_TAM * 1); // Centraliza a peça. Essa conta = 149.5
-    pecaL.pos_y = 0; // Começa no topo da tela
-    pecaL.tam_x = 3;
-    pecaL.tam_y = 2;
-
-    // Inicializa a matriz de quadrados para a peça "L"
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            pecaL.quadrados[i][j].ativo = false; // Inicializa todos os quadrados como inativos
-        }
-    }
-
-    // Definindo os quadrados ativos para a peça "L"
-    pecaL.quadrados[0][0] = (Quadrado){0, 0, cor, true}; // Quadrado superior esquerdo
-    pecaL.quadrados[1][0] = (Quadrado){1, 0, cor, true}; // Quadrado abaixo do primeiro
-    pecaL.quadrados[2][0] = (Quadrado){2, 0, cor, true}; // Quadrado abaixo do segundo
-    pecaL.quadrados[2][1] = (Quadrado){2, 1, cor, true}; // Quadrado à direita do terceiro
-    pecaL.quadrados[1][1] = (Quadrado){1, 1, cor, true};
-    pecaL.quadrados[0][1] = (Quadrado){0, 1, cor, true};
-
-
-
-    return pecaL;
-}
-
-Tabuleiro criarTabuleiro() {
-    Tabuleiro tab;
-    tab.largura = 20;
-    tab.altura = 20;
-    tab.cor_fundo = video_WHITE;    
-
-    // Inicializa a matriz do tabuleiro com a cor de fundo
-    for (int i = 0; i < tab.altura; i++) {
-        for (int j = 0; j < tab.largura; j++) {
-            tab.matriz[i][j].ativo = false;
-            tab.matriz[i][j].cor = tab.cor_fundo;
-        }
-    }
-
-    return tab;
-}
-
-void desenhaTabuleiro(Tabuleiro tab) {
-    for (int i = 0; i < tab.altura; i++) {
-        for (int j = 0; j < tab.largura; j++) {
-            video_box(j * BLOCO_TAM, i * BLOCO_TAM, (j + 1) * BLOCO_TAM - 1, (i + 1) * BLOCO_TAM - 1, tab.matriz[i][j].cor);
-        }
-    }
-}
-
-void desenhaPeca(Peca peca) {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (peca.quadrados[i][j].ativo) {
-                //posiçao inicial x = 149.5 e y = 0
-                //entao int x = peca.pos_x + j * BLOCO_TAM; é igual a 149.5 + 0 * 10
-                //int y = peca.pos_y + i * BLOCO_TAM; é igual a 0 + 0 * 10
+void desenhaPeca(Peca peca)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            if (peca.quadrados[i][j].ativo)
+            {
                 int x = peca.pos_x + j * BLOCO_TAM;
                 int y = peca.pos_y + i * BLOCO_TAM;
-                //void video_box (int /*x1*/, int /*y1*/, int /*x2*/, int /*y2*/, short /*color*/);
-                /*
-                x1, y1: coordenadas de um canto do retângulo.
-                x2, y2: coordenadas do canto oposto.
-                color: cor do retângulo.
-                */
-                video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor);
-            }
-        }
-    }
-}
-/*
-void desenhaPecaTabu(Peca peca, Tabuleiro tabu){
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (peca.quadrados[i][j].ativo) {
-                for (int k = 0; k < BLOCO_TAM; k++){
-                    int x = peca.pos_x + j * BLOCO_TAM;//149 ; i = 0
-                    int y = peca.pos_y + i * BLOCO_TAM;//0; j = 0
-                    tabu.matriz[x + k][y + k] = peca.quadrados[i][j];/
-                }
+                video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor); // x = pixel de inicio da peça; x + bloco tam = pixel de fim da peça
             }
         }
     }
 }
 
-void desenhaPecaTabu(Peca peca, Tabuleiro *tabu) {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (peca.quadrados[i][j].ativo) {
-                // Calcula a posição inicial do quadrado
-                int pos_x_inicial = peca.pos_x + (j * BLOCO_TAM);
-                int pos_y_inicial = peca.pos_y + (i * BLOCO_TAM);
-
-                // Preenche a matriz do tabuleiro com a cor da peça
-                for (int x = 0; x < BLOCO_TAM; x++) {
-                    for (int y = 0; y < BLOCO_TAM; y++) {
-                        // Verifica se a posição está dentro dos limites do tabuleiro
-                        if (pos_x_inicial + x < tabu->largura && pos_y_inicial + y < tabu->altura) {
-                            tabu->matriz[pos_y_inicial + y][pos_x_inicial + x] = peca.quadrados[i][j].cor;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-void desenhaPecaTabu(Peca peca, Tabuleiro *tabu) {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (peca.quadrados[i][j].ativo) {
-                for (int k = 0; k < BLOCO_TAM; k++) {
-                    for (int l = 0; l < BLOCO_TAM; l++) {
-                        int x = peca.pos_x + j * BLOCO_TAM + l; // Corrigido para usar l
-                        int y = peca.pos_y + i * BLOCO_TAM + k; // Corrigido para usar k
-                        // Verifica se as coordenadas estão dentro dos limites do tabuleiro
-                        if (x >= 0 && x < LARGURA_TELA && y >= 0 && y < ALTURA_TELA) {
-                            tabu->matriz[x][y] = peca.quadrados[i][j]; // Usar ponteiro para tabu
-                        }
-                    }
-                }
-            }
-        }
-    }
-}*/
-
-//k = 1 149 - 150 - 151 - 152 - 153 - 154 - 155 - 156 - 157 - 158
-                                                                           // 0  - 1    - 2  -  3  -  4  -  5  -  6  -  7  -  8  -  9
-
-short corAleatoria(){
-    short cores[]= {video_WHITE, video_YELLOW, video_RED, video_GREEN, video_BLUE, video_CYAN, video_MAGENTA, video_GREY, video_PINK, video_ORANGE};
+short corAleatoria()
+{
+    short cores[] = {video_WHITE, video_YELLOW, video_RED, video_GREEN, video_BLUE, video_CYAN, video_MAGENTA, video_GREY, video_PINK, video_ORANGE};
 
     // Semente para o gerador de números aleatórios, usando o tempo atual
     srand(time(NULL));
@@ -208,129 +93,218 @@ short corAleatoria(){
     return cores[numAleatorio];
 }
 
+void moverPeca(Peca *peca, int dy)
+{
+    //printf("\npos: %d\n", peca->pos_y);
+    peca->pos_y += dy;
+}
 
-void fixarPeca(Tabuleiro *tab, Peca peca) {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (peca.quadrados[i][j].ativo) {
-                // Calcula as coordenadas absolutas no tabuleiro
-                int x = peca.pos_x + j;
-                int y = peca.pos_y + i;
-
-                // Verifica se a posição está dentro dos limites do tabuleiro
-                //if (x >= 0 && x < tab->largura && y >= 0 && y < tab->altura) {
-                    // Fixa a cor do quadrado na matriz do tabuleiro
-                    tab->matriz[y][x] = peca.quadrados[i][j];
-                    //printf("fixei em X: %d e em Y: %d\n\n",x,y);
-               // }
-            }
+void iniTabuleiro(Tabuleiro *tabuleiro)
+{
+    for (int i = 0; i < LINHA_TABULEIRO; i++)
+    {
+        for (int j = 0; j < COLUNA_TABULEIRO; j++)
+        {
+            tabuleiro->ocupado[i][j] = false;
         }
     }
 }
 
-void moverPeca(Peca *peca, /*Peca *pecaq*/Tabuleiro *tab,int dx, int dy) {
-    
-    if (tab -> matriz[dx + 1][dy + 1].ativo == true){
-        fixarPeca(tab, *peca);
-    } else {
-        //peca->pos_x += dx;
-        //peca->pos_y += dy;
+void moverDirOuEsq(Tabuleiro *tab, Peca *peca, int dx)
+{
+    bool podeMover = true;
 
-        if(peca->pos_y < 170) {
-            peca->pos_x += dx;
-            peca->pos_y += dy;
-        } else {
-            fixarPeca(tab, *peca);
+    for (int i = 0; i < 4; i++) // não precisa percorrer o tabuleiro todo, pois está passando a posição da peça na matriz
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            if (peca->quadrados[i][j].ativo)
+            {
+                int x = (peca->pos_y / BLOCO_TAM) + i;
+                int y = (peca->pos_x / BLOCO_TAM) + j;
+
+                // para saber se a posição da peça será para a esquerda ou direita
+                if (dx > 0)
+                {
+                    // verifica se tem uma peça a direita
+                    if (y + 1 >= COLUNA_TABULEIRO || tab->ocupado[x][y + 1] == true)
+                    {
+                        podeMover = false;
+                    }
+                }
+
+                else
+                {
+                    // verifica se tem uma peça a esquerda
+                    if (y - 1 < 0 || tab->ocupado[x][y - 1] == true)
+                    {
+                        podeMover = false;
+                    }
+                }
+            }
         }
     }
 
-    /*if(peca->pos_y < 170) {
+    if (podeMover)
+    {
         peca->pos_x += dx;
-        peca->pos_y += dy;
-    } */
-    
-
+    }
 }
 
+bool verificarColisao(Tabuleiro *tabuleiro, Peca peca)
+{
+    for (int i = 0; i < 4; i++) // não precisa percorrer o tabuleiro todo, pois está passando a posição da peça na matriz
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            if (peca.quadrados[i][j].ativo)
+            {
+                int x = (peca.pos_y / BLOCO_TAM) + i;
+                int y = (peca.pos_x / BLOCO_TAM) + j;
 
-void fixarPecaNoTabuleiro(Tabuleiro *tab, Peca peca) {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (peca.quadrados[i][j].ativo) {
-                int x = (peca.pos_x / BLOCO_TAM) + j;
-                int y = (peca.pos_y / BLOCO_TAM) + i;
-                tab->matriz[y][x] = peca.quadrados[i][j]; // Fixa a peça no tabuleiro
+                // verifica se a peça está dentro do tabuleiro
+                if (x < 0 || x >= LINHA_TABULEIRO || y < 0 || y >= COLUNA_TABULEIRO)
+                {
+                    return true;
+                }
+
+                // verifica se tem uma peça abaixo
+                if (x + 1 < LINHA_TABULEIRO && tabuleiro->ocupado[x + 1][y] == true)
+                {
+                    return true;
+                }
+
+                // // verifica se tem uma peça a esquerda
+                // if (y - 1 >= 0 && tabuleiro->ocupado[x][y - 1] == true)
+                // {
+                //     return true;
+                // }
+
+                // // verifica se tem uma peça a direita
+                // if (y + 1 < COLUNA_TABULEIRO && tabuleiro->ocupado[x][y + 1] == true)
+                // {
+                //     return true;
+                // }
+            }
+        }
+    }
+    return false;
+}
+
+void addPecaNoTabuleiro(Tabuleiro *tabuleiro, Peca peca)
+{
+    for (int i = 0; i < 21; i++)
+    {
+        for (int j = 0; j < 31; j++)
+        {
+            // faz com que marque como true no tabuleiro
+            if (i < 4 && j < 4 && peca.quadrados[i][j].ativo)
+            {
+                int x = (peca.pos_y / BLOCO_TAM) + i;
+                int y = (peca.pos_x / BLOCO_TAM) + j;
+
+                tabuleiro->ocupado[x][y] = true;
+
+                // mostra a peça na tela
+                x = peca.pos_x + (j * BLOCO_TAM);
+                y = peca.pos_y + (i * BLOCO_TAM);
+                video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor);
+            }
+
+            // faz com que mostre na tela as posições que já estão ativas no tabuleiro
+            else if (tabuleiro->ocupado[i][j] == true)
+            {
+                int x = (j * BLOCO_TAM);
+                int y = (i * BLOCO_TAM);
+                video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, video_WHITE);
             }
         }
     }
 }
 
+void verificaLinhaCompleta(Tabuleiro *tab)
+{
+    int linhaCompleta, i, j, p, k;
 
-int main(){
-    video_open();    // Inicializa o vídeo
-    video_clear();   // Limpa o vídeo
+    for (i = 0; i < LINHA_TABULEIRO; i++)
+    {
+        linhaCompleta = 0;
 
-    Tabuleiro tab = criarTabuleiro();
-    desenhaTabuleiro(tab);
-
-    Peca pecaAtual = criarPecaL(corAleatoria());
-    desenhaPeca(pecaAtual);
-
-    video_show();     // Mostra o conteúdo na tela
-    
-    // Mantém a tela atualizada até que o usuário feche
-    while (1) {
-
-        //pecaAtual = criarPecaL(corAleatoria()); // Cria uma nova peça
-
-        moverPeca(&pecaAtual, &tab,/*&pecaq*/0 , 1); // Move a peça para baixo
-
-        video_clear();  // Limpa a tela
-
-        desenhaTabuleiro(tab); // Redesenha o tabuleiro
-        desenhaPeca(pecaAtual); // Desenha a peça na nova posição
-
-        video_show();  // Atualiza a tela
-        //usleep(500000); // Delay para controlar a velocidade de movimento
-
-        // Verifica se a peça atingiu o fundo ou colidiu com outra peça
-        if (pecaAtual.pos_y + pecaAtual.tam_y * BLOCO_TAM >= ALTURA_TELA) {
-            break; // Sai do loop se a peça alcançar o fundo
+        for (j = 0; j < COLUNA_TABULEIRO; j++)
+        {
+            if (tab->ocupado[i][j] == true)
+            {
+                linhaCompleta += 1;
+            }
         }
-        
 
-        //Peca pecaL = criarPecaL(cor);
+        if (linhaCompleta == COLUNA_TABULEIRO)
+        {
+            for (j = 0; j < COLUNA_TABULEIRO; j++)
+            {
+                tab->ocupado[i][j] = false; // tira os blocos da linha completa
+            }
 
-        //moverPeca(&pecaL, &tabu,/*&pecaq*/0 , 1);
-        //moverPeca(&pecaq, 0 , 2);
-        //video_clear();
+            for (p = i - 1; p >= 0; p--) // move de cima para baixo
+            {
+                for (k = 0; k < COLUNA_TABULEIRO; k++)
+                {
+                    if (tab->ocupado[p][k] == true)
+                    {
+                        tab->ocupado[p + 1][k] = tab->ocupado[p][k]; // faz com que desça o bloco para a linha que foi desocupada
+                        tab->ocupado[p][k] = false; 
+                    }
+                }
+            }
+        }
+    }
+}
 
+int main()
+{
+    video_open();
+    video_clear();
 
+    Tabuleiro tab;
+    iniTabuleiro(&tab);
 
-        //Tabuleiro tabu = criarTabuleiro();
-        //desenhaTabuleiro(tabu);
-        
-        //desenhaPeca(pecaL);
-        //desenhaPeca(pecaq);
+    short cor = corAleatoria();
+    Peca peca = criarPeca(cor);
 
-       // video_show();    
+    video_show();
 
-        //Peca pecaL = criarPecaL(cor);
-        //sleep(1);
-        // Aqui você pode adicionar lógica para movimentar a peça ou outras interações
+    while (1)
+    {
+        while (!verificarColisao(&tab, peca))
+        {
+            accel_read(&acel_rdy, &acel_tap, &acel_dtap, &acel_x, &acel_y, &acel_z, &acel_mg);
+
+            desenhaPeca(peca);
+
+            moverPeca(&peca, 10); // move para baixo
+            if (acel_x < -10)
+            {
+                moverDirOuEsq(&tab, &peca, -10);
+            } // move para a esquerda
+            else if (acel_x > 10)
+            {
+                moverDirOuEsq(&tab, &peca, 10);
+            } // move para a direita
+
+            video_clear();
+
+            desenhaPeca(peca);
+
+            video_show();
+            sleep(1);
+        }
+
+        addPecaNoTabuleiro(&tab, peca);
+        verificaLinhaCompleta(&tab);
+
+        peca = criarPeca(corAleatoria());
     }
 
-    //video_close();   // Fecha o vídeo
-
+    video_close();
     return 0;
 }
-/*
-```
-
-### Explicações das Adições:
-1. **Definições de Cores**: Adicionei definições para as cores que você pode usar.
-2. **Tamanho do Bloco**: Defini `BLOCO_TAM` para o tamanho de cada quadrado da peça.
-3. **Posição Inicial da Peça**: A posição inicial da peça "L" foi ajustada para centralizá-la na tela.
-4. **Loop Infinito**: Um loop infinito foi adicionado para manter a tela atualizada. Você pode adicionar lógica para movimentar a peça ou outras interações dentro desse loop.
-
-Agora, ao executar o código, a peça "L" deve ser desenhada na tela VGA com uma cor aleatória. Você pode expandir a lógica para incluir movimentação e outras funcionalidades do jogo Tetris.*/
