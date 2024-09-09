@@ -24,6 +24,7 @@ typedef struct {
 typedef struct {
     int tam_x, tam_y;     // Dimensões da peça (número de quadrados)
     int pos_x, pos_y;     // Posição da peça no tabuleiro
+    bool fixado;
     Quadrado quadrados[4][4]; // Matriz de quadrados, 4x4 é suficiente para qualquer peça de Tetris
 } Peca;
 
@@ -221,6 +222,7 @@ void fixarPeca(Tabuleiro *tab, Peca peca) {
                 //if (x >= 0 && x < tab->largura && y >= 0 && y < tab->altura) {
                     // Fixa a cor do quadrado na matriz do tabuleiro
                     tab->matriz[y][x] = peca.quadrados[i][j];
+                    
                     //printf("fixei em X: %d e em Y: %d\n\n",x,y);
                // }
             }
@@ -232,6 +234,7 @@ void moverPeca(Peca *peca, /*Peca *pecaq*/Tabuleiro *tab,int dx, int dy) {
     
     if (tab -> matriz[dx + 1][dy + 1].ativo == true){
         fixarPeca(tab, *peca);
+        peca.fixado = true;
     } else {
         //peca->pos_x += dx;
         //peca->pos_y += dy;
@@ -241,6 +244,7 @@ void moverPeca(Peca *peca, /*Peca *pecaq*/Tabuleiro *tab,int dx, int dy) {
             peca->pos_y += dy;
         } else {
             fixarPeca(tab, *peca);
+            peca.fixado = true;
         }
     }
 
@@ -292,8 +296,10 @@ int main(){
 
         video_show();  // Atualiza a tela
         //usleep(500000); // Delay para controlar a velocidade de movimento
-
-       pecaAtual = criarPecaL(corAleatoria());
+        if (pecaAtual.fixado == true){            
+            pecaAtual = criarPecaL(corAleatoria());
+        }
+        //pecaAtual = criarPecaL(corAleatoria());
         //sleep(1);
         // Aqui você pode adicionar lógica para movimentar a peça ou outras interações
     }
