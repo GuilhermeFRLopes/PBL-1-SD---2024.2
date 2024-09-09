@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <intelfpgaup/video.h>
+#include <intelfpgaup/accel.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -13,7 +14,7 @@
 #define LARGURA_TELA 319 // Tamanho da tela VGA
 #define ALTURA_TELA 239 // Tamanho da tela VGA
 
-
+int acel_rdy, acel_tap, acel_dtap, acel_x, acel_y, acel_z, acel_mg;
 
 typedef struct {
     int pos_x, pos_y; // Posição relativa do quadrado dentro da peça
@@ -138,61 +139,7 @@ void desenhaPeca(Peca peca) {
         }
     }
 }
-/*
-void desenhaPecaTabu(Peca peca, Tabuleiro tabu){
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (peca.quadrados[i][j].ativo) {
-                for (int k = 0; k < BLOCO_TAM; k++){
-                    int x = peca.pos_x + j * BLOCO_TAM;//149 ; i = 0
-                    int y = peca.pos_y + i * BLOCO_TAM;//0; j = 0
-                    tabu.matriz[x + k][y + k] = peca.quadrados[i][j];/
-                }
-            }
-        }
-    }
-}
 
-void desenhaPecaTabu(Peca peca, Tabuleiro *tabu) {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (peca.quadrados[i][j].ativo) {
-                // Calcula a posição inicial do quadrado
-                int pos_x_inicial = peca.pos_x + (j * BLOCO_TAM);
-                int pos_y_inicial = peca.pos_y + (i * BLOCO_TAM);
-
-                // Preenche a matriz do tabuleiro com a cor da peça
-                for (int x = 0; x < BLOCO_TAM; x++) {
-                    for (int y = 0; y < BLOCO_TAM; y++) {
-                        // Verifica se a posição está dentro dos limites do tabuleiro
-                        if (pos_x_inicial + x < tabu->largura && pos_y_inicial + y < tabu->altura) {
-                            tabu->matriz[pos_y_inicial + y][pos_x_inicial + x] = peca.quadrados[i][j].cor;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-void desenhaPecaTabu(Peca peca, Tabuleiro *tabu) {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (peca.quadrados[i][j].ativo) {
-                for (int k = 0; k < BLOCO_TAM; k++) {
-                    for (int l = 0; l < BLOCO_TAM; l++) {
-                        int x = peca.pos_x + j * BLOCO_TAM + l; // Corrigido para usar l
-                        int y = peca.pos_y + i * BLOCO_TAM + k; // Corrigido para usar k
-                        // Verifica se as coordenadas estão dentro dos limites do tabuleiro
-                        if (x >= 0 && x < LARGURA_TELA && y >= 0 && y < ALTURA_TELA) {
-                            tabu->matriz[x][y] = peca.quadrados[i][j]; // Usar ponteiro para tabu
-                        }
-                    }
-                }
-            }
-        }
-    }
-}*/
 
 //k = 1 149 - 150 - 151 - 152 - 153 - 154 - 155 - 156 - 157 - 158
                                                                            // 0  - 1    - 2  -  3  -  4  -  5  -  6  -  7  -  8  -  9
@@ -218,19 +165,54 @@ void fixarPeca(Tabuleiro *tab, Peca peca) {
                 int x = peca.pos_x + j;
                 int y = peca.pos_y + i;
 
-                // Verifica se a posição está dentro dos limites do tabuleiro
-                //if (x >= 0 && x < tab->largura && y >= 0 && y < tab->altura) {
-                    // Fixa a cor do quadrado na matriz do tabuleiro
+                // Verifica se as coordenadas estão dentro dos limites do tabuleiro
+                if (x >= 0 && x < tab->largura && y >= 0 && y < tab->altura) {
                     tab->matriz[y][x] = peca.quadrados[i][j];
-                    
-                    //printf("fixei em X: %d e em Y: %d\n\n",x,y);
-               // }
+                }
             }
         }
     }
 }
 
-void moverPeca(Peca *peca, /*Peca *pecaq*/Tabuleiro *tab,int dx, int dy) {
+// Função para verificar e limpar linhas completas
+void verificarLinhasCompletas(Tabuleiro *tab) {
+    for (int y = 0; y < ALTURA_TABULEIRO; y++) {
+        bool linhaCompleta = true;
+
+        // Verifica se a linha está completa
+        for (int x = 0; x < LARGURA_TABULEIRO; x++) {
+            if (!tab->matriz[y][x].ativo) {
+                linhaCompleta = false;
+                break;
+            }
+        }
+
+        // Se a linha estiver completa, limpá-la e descer as linhas acima
+        if (linhaCompleta) {
+            // Limpa a linha completa
+            for (int x = 0; x < LARGURA_TABULEIRO; x++) {
+                tab->matriz[y][x].ativo = false;
+            }
+
+            // Desce as linhas acima
+            for (int linhaAcima = y; linhaAcima > 0; linhaAcima--) {
+                for (int x = 0; x < LARGURA_TABULEIRO; x++) {
+                    tab->matriz[linhaAcima][x] = tab->matriz[linhaAcima - 1][x];
+                }
+            }
+
+            // Limpa a linha superior (agora vazia)
+            for (int x = 0; x < LARGURA_TABULEIRO; x++) {
+                tab->matriz[0][x].ativo = false;
+            }
+
+            // Reavalia a linha atual, pois pode haver mais linhas completas após a descida
+            y--; // Decrementa y para verificar a linha atual novamente
+        }
+    }
+}
+
+/*void moverPeca(Peca *peca, Tabuleiro *tab,int dx, int dy) {
     
     if (tab -> matriz[dx + 1][dy + 1].ativo == true){
         fixarPeca(tab, *peca);
@@ -247,15 +229,91 @@ void moverPeca(Peca *peca, /*Peca *pecaq*/Tabuleiro *tab,int dx, int dy) {
             peca.fixado = true;
         }
     }
+}*/
 
-    /*if(peca->pos_y < 170) {
+/*
+void moverPeca(Peca *peca, Tabuleiro *tab, int dx, int dy) {
+    // Calcula a nova posição
+    int nova_pos_x = peca->pos_x + dx;
+    int nova_pos_y = peca->pos_y + dy;
+
+    // Verifica e ajusta a nova posição X
+    if (nova_pos_x < 0) {
+        nova_pos_x = 0; // Limite inferior
+    } else if (nova_pos_x > 199) {
+        nova_pos_x = 199; // Limite superior
+    }
+
+    // Verifica e ajusta a nova posição Y
+    if (nova_pos_y < 0) {
+        nova_pos_y = 0; // Limite inferior
+    } else if (nova_pos_y > 170) {
+        nova_pos_y = 170; // Limite superior
+    }
+
+    // Verifica se a posição onde a peça vai se mover já está ocupada
+    if (tab->matriz[nova_pos_x + 1][nova_pos_y + 1].ativo == true) {
+        fixarPeca(tab, *peca);
+        peca->fixado = true;
+    } else {
+        // Move a peça para a nova posição ajustada
+        peca->pos_x = nova_pos_x;
+        peca->pos_y = nova_pos_y;
+
+        // Verifica se a nova posição Y está dentro do limite
+        if (peca->pos_y >= 170) {
+            fixarPeca(tab, *peca);
+            peca->fixado = true;
+        }
+    }
+}*/
+
+void moverPeca(Peca *peca, Tabuleiro *tab, int dx, int dy) {
+    // Calcula a nova posição
+    int nova_pos_x = peca->pos_x + dx;
+    int nova_pos_y = peca->pos_y + dy;
+
+    // Verifica e ajusta a nova posição X
+    if (nova_pos_x < 0) {
+        nova_pos_x = 0; // Limite inferior
+    } else if (nova_pos_x > 199) {
+        nova_pos_x = 199; // Limite superior
+    }
+
+    // Verifica se a nova posição Y está dentro do limite
+    if (nova_pos_y < 0) {
+        nova_pos_y = 0; // Limite inferior
+    } else if (nova_pos_y > 170) {
+        nova_pos_y = 170; // Limite superior
+    }
+
+    // Verifica se a nova posição está ocupada
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (peca->quadrados[i][j].ativo) {
+                int x = nova_pos_x + j;
+                int y = nova_pos_y + i;
+
+                // Verifica se a nova posição está dentro dos limites do tabuleiro
+                if (x < 0 || x >= tab->largura || y < 0 || y >= tab->altura || tab->matriz[y][x].ativo) {
+                    // Colisão detectada
+                    fixarPeca(tab, *peca);
+                    peca->fixado = true;
+                    return; // Sai da função se houver colisão
+                }
+            }
+        }
+    }
+
+    // Move a peça para a nova posição ajustada
+    peca->pos_x = nova_pos_x;
+    peca->pos_y = nova_pos_y;
+}
+
+ /*if(peca->pos_y < 170) {
         peca->pos_x += dx;
         peca->pos_y += dy;
     } */
-    
-
-}
-
 
 void fixarPecaNoTabuleiro(Tabuleiro *tab, Peca peca) {
     for (int i = 0; i < 4; i++) {
@@ -284,10 +342,18 @@ int main(){
     
     // Mantém a tela atualizada até que o usuário feche
     while (1) {
-
-        //pecaAtual = criarPecaL(corAleatoria()); // Cria uma nova peça
-
-        moverPeca(&pecaAtual, &tab,/*&pecaq*/0 , 1); // Move a peça para baixo
+        accel_read(&acel_rdy, &acel_tap, &acel_dtap, &acel_x, &acel_y, &acel_z, &acel_mg);
+        if (acel_x < -10)
+            {
+                moverPeca(&pecaAtual, &tab,-1 , 1);
+            } // move para a esquerda
+            else if (acel_x > 10)
+            {
+                moverPeca(&pecaAtual, &tab,1 , 1);
+            } else {
+                moverPeca(&pecaAtual, &tab,0 , 1); // Move a peça para baixo
+            }
+        //moverPeca(&pecaAtual, &tab,0 , 1); // Move a peça para baixo
 
         video_clear();  // Limpa a tela
 
@@ -295,16 +361,13 @@ int main(){
         desenhaPeca(pecaAtual); // Desenha a peça na nova posição
 
         video_show();  // Atualiza a tela
-        //usleep(500000); // Delay para controlar a velocidade de movimento
+        usleep(500000); // Delay para controlar a velocidade de movimento
         if (pecaAtual.fixado == true){            
             pecaAtual = criarPecaL(corAleatoria());
         }
-        //pecaAtual = criarPecaL(corAleatoria());
-        //sleep(1);
-        // Aqui você pode adicionar lógica para movimentar a peça ou outras interações
     }
 
-    //video_close();   // Fecha o vídeo
+    video_close();   // Fecha o vídeo
 
     return 0;
 }
