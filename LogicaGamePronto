@@ -22,6 +22,7 @@ int acel_rdy, acel_tap, acel_dtap, acel_x, acel_y, acel_z, acel_mg;
 typedef struct
 {
     bool ocupado[LINHA_TABULEIRO][COLUNA_TABULEIRO]; // Matriz para armazenar o estado das posições
+    short cor[LINHA_TABULEIRO][COLUNA_TABULEIRO];
 } Tabuleiro;
 
 typedef struct
@@ -66,7 +67,7 @@ Peca criarPeca(short cor)
 
 short corAleatoria()
 {
-    short cores[] = {video_WHITE, video_YELLOW, video_RED, video_GREEN, video_BLUE, video_CYAN, video_MAGENTA, video_GREY, video_PINK, video_ORANGE};
+    short cores[] = {video_YELLOW, video_RED, video_GREEN, video_BLUE, video_CYAN, video_MAGENTA, video_GREY, video_PINK, video_ORANGE};
 
     srand(time(NULL)); // Semente para o gerador de números aleatórios
 
@@ -300,6 +301,7 @@ void addPecaNoTabuleiro(Tabuleiro *tabuleiro, Peca peca)
                 int y = (peca.pos_x / BLOCO_TAM) + j;
 
                 tabuleiro->ocupado[x][y] = true;
+                tabuleiro->cor[x][y] = peca.quadrados[i][j].cor;
 
                 // mostra a peça na tela
                 x = peca.pos_x + (j * BLOCO_TAM);
@@ -328,7 +330,7 @@ void mostrarAllPecas(Tabuleiro *tab){
             {
                 int x = (j * BLOCO_TAM);
                 int y = (i * BLOCO_TAM);
-                video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, video_YELLOW);
+                video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, tab->cor[i][j]);
             }
         }
 
