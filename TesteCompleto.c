@@ -33,6 +33,11 @@
 #define COLUNA_TABULEIRO 10
 #define LINHA_TABULEIRO 20
 
+int score = 0; // Pontuação do jogador
+
+int velocidade = 0;
+char str[15]; // String para exibição da pontuação
+
 typedef struct
 {
     bool ocupado[LINHA_TABULEIRO][COLUNA_TABULEIRO]; // Matriz para armazenar o estado das posições
@@ -374,6 +379,8 @@ void verificaLinhaCompleta(Tabuleiro *tab)
 
         if (linhaCompleta == COLUNA_TABULEIRO)
         {
+            score += 10;
+            velocidade -= 2000;
             for (j = 0; j < COLUNA_TABULEIRO; j++)
             {
                 tab->ocupado[i][j] = false; // tira os blocos da linha completa
@@ -463,12 +470,20 @@ int main() {
 
     Peca peca = criarPecasAleatorias();
 
-    video_show();
+    //sprintf("sexo", "Score: %d", score); // Atualiza a pontuação e exibe em terminal
+    //video_text(150, 150, "sexo"); // Exibe a pontuação
 
+    video_show();
     while (1)
     {
+        video_erase ();
         while (!verificarColisao(&tab, peca))
-        {
+        {   
+            
+            video_erase ();
+            sprintf(str, "Score: %d", score); // Atualiza a pontuação e exibe em terminal
+            video_text(50,5 , str); // Exibe a pontuação
+            
 
             // 4. Escrever no IC_DATA_CMD para solicitar a leitura dos dados de X, Y, Z
             // Enviar o registrador de início de leitura (0x32 - registrador de dados do ADXL345)
@@ -518,7 +533,7 @@ int main() {
             mostrarAllPecas(&tab);
 
             video_show();
-            usleep(500000);
+            usleep(500000 + velocidade);
         }
 
         addPecaNoTabuleiro(&tab, peca);
