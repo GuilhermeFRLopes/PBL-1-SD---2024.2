@@ -6,6 +6,7 @@
 
 #define I2C0_BASE_ADDR  0xFFC04000    // Endereço base do controlador I2C0
 #define IC_CON_REG      0x00          // Offset do registrador IC_CON
+#define IC_TAR_REG      0x04          // Offset do registrador IC_TAR
 #define MAP_SIZE        0x1000        // Tamanho do mapeamento de memória
 
 int main() {
@@ -34,8 +35,14 @@ int main() {
     // - Reinício habilitado
     uint32_t ic_con_value = 0x65;
     *((uint32_t *)(i2c_base + IC_CON_REG)) = ic_con_value;
-
     printf("Registrador IC_CON configurado com valor: 0x%X\n", ic_con_value);
+
+    // Configurar o registrador IC_TAR para:
+    // - Endereço de escravo ADXL345 (0x53)
+    // - Endereçamento de 7 bits
+    uint32_t ic_tar_value = 0x53;  // Endereço de escravo (7 bits)
+    *((uint32_t *)(i2c_base + IC_TAR_REG)) = ic_tar_value;
+    printf("Registrador IC_TAR configurado com valor: 0x%X\n", ic_tar_value);
 
     // Desmapear a memória e fechar o arquivo de memória
     munmap(i2c_base, MAP_SIZE);
