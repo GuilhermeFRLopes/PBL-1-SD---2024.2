@@ -51,34 +51,40 @@ int main() {
     *((uint32_t *)(i2c_base + IC_ENABLE_REG)) = 0x1;
     printf("I2C habilitado\n");
 
-    // 4. Escrever no IC_DATA_CMD para solicitar a leitura dos dados de X, Y, Z
-    // Enviar o registrador de início de leitura (0x32 - registrador de dados do ADXL345)
-    *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) = ADXL345_REG_DATA_X0;
-    
-    // 5. Solicitar leitura de 6 bytes (dados de X, Y, Z)
-    for (int i = 0; i < 6; i++) {
-        *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) = 0x100;  // Cmd para leitura
+    // Loop infinito para ler os dados continuamente
+    while (1) {
+        // 4. Escrever no IC_DATA_CMD para solicitar a leitura dos dados de X, Y, Z
+        // Enviar o registrador de início de leitura (0x32 - registrador de dados do ADXL345)
+        *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) = ADXL345_REG_DATA_X0;
+
+        // 5. Solicitar leitura de 6 bytes (dados de X, Y, Z)
+        for (int i = 0; i < 6; i++) {
+            *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) = 0x100;  // Cmd para leitura
+        }
+
+        // 6. Verificar o IC_RXFLR para garantir que os dados estejam prontos para leitura
+        while (*((uint32_t *)(i2c_base + IC_RXFLR_REG)) < 6);
+
+        // 7. Ler os dados do IC_DATA_CMD (6 bytes: 2 para X, 2 para Y, 2 para Z)
+        int16_t accel_data[3] = {0};  // Array para armazenar os valores de X, Y, Z
+
+        for (int i = 0; i < 3; i++) {
+            // Lê dois bytes (low byte primeiro, depois o high byte)
+            uint8_t low_byte = *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) & 0xFF;
+            uint8_t high_byte = *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) & 0xFF;
+            accel_data[i] = (int16_t)((high_byte << 8) | low_byte);  // Combinar os dois bytes
+        }
+
+        // Imprimir os valores dos eixos X, Y, Z
+        printf("Aceleração em X: %d\n", accel_data[0]);
+        printf("Aceleração em Y: %d\n", accel_data[1]);
+        printf("Aceleração em Z: %d\n", accel_data[2]);
+
+        // Pausar por um breve momento (500 ms) antes de ler novamente
+        usleep(500000);
     }
 
-    // 6. Verificar o IC_RXFLR para garantir que os dados estejam prontos para leitura
-    while (*((uint32_t *)(i2c_base + IC_RXFLR_REG)) < 6);
-
-    // 7. Ler os dados do IC_DATA_CMD (6 bytes: 2 para X, 2 para Y, 2 para Z)
-    int16_t accel_data[3] = {0};  // Array para armazenar os valores de X, Y, Z
-
-    for (int i = 0; i < 3; i++) {
-        // Lê dois bytes (low byte primeiro, depois o high byte)
-        uint8_t low_byte = *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) & 0xFF;
-        uint8_t high_byte = *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) & 0xFF;
-        accel_data[i] = (int16_t)((high_byte << 8) | low_byte);  // Combinar os dois bytes
-    }
-
-    // Imprimir os valores dos eixos X, Y, Z
-    printf("Aceleração em X: %d\n", accel_data[0]);
-    printf("Aceleração em Y: %d\n", accel_data[1]);
-    printf("Aceleração em Z: %d\n", accel_data[2]);
-
-    // 8. Desabilitar o I2C0 após a operação
+    // Desabilitar o I2C0 após a operação (nunca será alcançado, pois o loop é infinito)
     *((uint32_t *)(i2c_base + IC_ENABLE_REG)) = 0x0;
     printf("I2C desabilitado\n");
 
