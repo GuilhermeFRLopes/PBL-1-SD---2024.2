@@ -208,16 +208,9 @@ void desenhaPeca(Peca peca)
             {
                 int x = peca.pos_x + j * BLOCO_TAM;
                 int y = peca.pos_y + i * BLOCO_TAM;
+                video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor); // x = pixel de inicio da peça; x + bloco tam = pixel de fim da peça
+                video_line(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor); 
 
-                // Desenhar o quadrado preenchido
-                video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor);
-
-                // Desenhar a linha cinza ao redor do quadrado
-                short cor_borda = 0xA0A0A0; // Cor cinza
-                video_line(x, y, x + BLOCO_TAM - 1, y, cor_borda);             // Linha superior
-                video_line(x, y, x, y + BLOCO_TAM - 1, cor_borda);             // Linha esquerda
-                video_line(x + BLOCO_TAM - 1, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, cor_borda); // Linha direita
-                video_line(x, y + BLOCO_TAM - 1, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, cor_borda); // Linha inferior
             }
         }
     }
@@ -503,6 +496,34 @@ int main() {
     //sprintf("sexo", "Score: %d", score); // Atualiza a pontuação e exibe em terminal
     //video_text(150, 150, "sexo"); // Exibe a pontuação
 
+    const char* asciiArt = 
+    "/***\n"
+    " *                                                                                                  \n"
+    " *                                                                                                  \n"
+    " *                                                                                                  \n"
+    " *                                                                                                  \n"
+    " *                                                                                                  \n"
+    " *                                                                                                  \n"
+    " *        ssssssssss       cccccccccccccccc   ooooooooooo   rrrrr   rrrrrrrrr       eeeeeeeeeeee    \n"
+    " *      ss::::::::::s    cc:::::::::::::::c oo:::::::::::oo r::::rrr:::::::::r    ee::::::::::::ee  \n"
+    " *    ss:::::::::::::s  c:::::::::::::::::co:::::::::::::::or:::::::::::::::::r  e::::::eeeee:::::ee\n"
+    " *    s::::::ssss:::::sc:::::::cccccc:::::co:::::ooooo:::::orr::::::rrrrr::::::re::::::e     e:::::e\n"
+    " *     s:::::s  ssssss c::::::c     ccccccco::::o     o::::o r:::::r     r:::::re:::::::eeeee::::::e\n"
+    " *       s::::::s      c:::::c             o::::o     o::::o r:::::r     rrrrrrre:::::::::::::::::e \n"
+    " *          s::::::s   c:::::c             o::::o     o::::o r:::::r            e::::::eeeeeeeeeee  \n"
+    " *    ssssss   s:::::s c::::::c     ccccccco::::o     o::::o r:::::r            e:::::::e           \n"
+    " *    s:::::ssss::::::sc:::::::cccccc:::::co:::::ooooo:::::o r:::::r            e::::::::e          \n"
+    " *    s::::::::::::::s  c:::::::::::::::::co:::::::::::::::o r:::::r             e::::::::eeeeeeee  \n"
+    " *     s:::::::::::ss    cc:::::::::::::::c oo:::::::::::oo  r:::::r              ee:::::::::::::e  \n"
+    " *      sssssssssss        cccccccccccccccc   ooooooooooo    rrrrrrr                eeeeeeeeeeeeee  \n"
+    " *                                                                                                  \n"
+    " *                                                                                                  \n"
+    " *                                                                                                  \n"
+    " *                                                                                                  \n"
+    " *                                                                                                  \n"
+    " *                                                                                                  \n"
+    " */";
+
     video_show();
     while (1)
     {
@@ -511,8 +532,8 @@ int main() {
         {   
             
             video_erase ();
-            sprintf(str, "Score: %d", score); // Atualiza a pontuação e exibe em terminal
-            video_text(50,5 , str); // Exibe a pontuação
+            sprintf(str, "score: %d", score); // Atualiza a pontuação e exibe em terminal
+            video_text(50,5 , asciiArt); // Exibe a pontuação
             
 
             // 4. Escrever no IC_DATA_CMD para solicitar a leitura dos dados de X, Y, Z
