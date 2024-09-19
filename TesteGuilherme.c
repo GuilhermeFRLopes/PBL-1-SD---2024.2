@@ -423,193 +423,67 @@ void verificaLinhaCompleta(Tabuleiro *tab)
         }
     }
 }
+const char* asciiArt[] = {
+    "    ssssssssss       cccccccccccccccc   ooooooooooo   rrrrr   rrrrrrrrr       eeeeeeeeeeee    ",
+    "  ss::::::::::s    cc:::::::::::::::c oo:::::::::::oo r::::rrr:::::::::r    ee::::::::::::ee  ",
+    "ss:::::::::::::s  c:::::::::::::::::co:::::::::::::::or:::::::::::::::::r  e::::::eeeee:::::ee",
+    "s::::::ssss:::::sc:::::::cccccc:::::co:::::ooooo:::::orr::::::rrrrr::::::re::::::e     e:::::e",
+    " s:::::s  ssssss c::::::c     ccccccco::::o     o::::o r:::::r     r:::::re:::::::eeeee::::::e",
+    "   s::::::s      c:::::c             o::::o     o::::o r:::::r     rrrrrrre:::::::::::::::::e ",
+    "      s::::::s   c:::::c             o::::o     o::::o r:::::r            e::::::eeeeeeeeeee  ",
+    "ssssss   s:::::s c::::::c     ccccccco::::o     o::::o r:::::r            e:::::::e           ",
+    "s:::::ssss::::::sc:::::::cccccc:::::co:::::ooooo:::::o r:::::r            e::::::::e          ",
+    "s::::::::::::::s  c:::::::::::::::::co:::::::::::::::o r:::::r             e::::::::eeeeeeee  ",
+    " s:::::::::::ss    cc:::::::::::::::c oo:::::::::::oo  r:::::r              ee:::::::::::::e  ",
+    "  sssssssssss        cccccccccccccccc   ooooooooooo    rrrrrrr                eeeeeeeeeeeeee  "
+};
 
+void draw_ascii_art(int start_x, int start_y, short color, int value) {
+    char single_char[2]; // Array para armazenar um único caractere e o terminador nulo
+    single_char[1] = '\0'; // Define o terminador nulo
 
+    // Desenha a arte ASCII
+    for (int i = 0; i < 12; i++) { // Atualiza para 12 linhas
+        for (int j = 0; asciiArt[i][j] != '\0'; j++) { // Para cada caractere na linha
+            if (asciiArt[i][j] != ' ') { // Se não for um espaço
+                single_char[0] = asciiArt[i][j]; // Armazena o caractere
+                video_text(start_x + j, start_y + i, single_char); // Desenha o caractere
+            }
+        }
+    }
+
+    // Desenha o valor ao lado da arte ASCII
+    char value_str[20];
+    sprintf(value_str, " Valor: %d", value);
+    video_text(start_x + 60, start_y + 5, value_str); // Ajuste a posição conforme necessário
+}
 int main() {
-    int fd;
-    void *i2c_base;
-
-    // Abrir /dev/mem para acessar a memória do sistema
-    fd = open("/dev/mem", O_RDWR | O_SYNC);
-    if (fd == -1) {
-        perror("Erro ao abrir /dev/mem");
+    // Código para abrir o dispositivo de vídeo
+    if (!video_open()) {
+        printf("Erro ao abrir o dispositivo de vídeo.\n");
         return -1;
     }
 
-    // Mapear a memória do controlador I2C0
-    i2c_base = mmap(NULL, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, I2C0_BASE_ADDR);
-    if (i2c_base == MAP_FAILED) {
-        perror("Erro ao mapear a memória do I2C");
-        close(fd);
-        return -1;
-    }
-
-    // Configurar o registrador IC_CON para:
-    // - Mestre
-    // - Modo rápido (400 kbit/s)
-    // - Endereçamento de 7 bits
-    // - Reinício habilitado
-    uint32_t ic_con_value = 0x65;
-    *((volatile uint32_t *)(i2c_base + IC_CON_OFFSET)) = ic_con_value; // Corrigido
-    printf("Registrador IC_CON configurado com valor: 0x%X\n", ic_con_value);
-
-    // Configurar o registrador IC_TAR para:
-    // - Endereço de escravo ADXL345 (0x53)
-    // - Endereçamento de 7 bits
-    uint32_t ic_tar_value = 0x53;  // Endereço de escravo (7 bits)
-    *((uint32_t *)(i2c_base + IC_TAR_REG)) = ic_tar_value;
-    printf("Registrador IC_TAR configurado com valor: 0x%X\n", ic_tar_value);// 3. Habilitar o I2C0
-    *((uint32_t *)(i2c_base + IC_ENABLE_REG)) = 0x1;
-    printf("I2C habilitado\n");
-
-    /*
-    // 4. Escrever no IC_DATA_CMD para solicitar a leitura dos dados de X, Y, Z
-    // Enviar o registrador de início de leitura (0x32 - registrador de dados do ADXL345)
-    *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) = ADXL345_REG_DATA_X0;
-    
-    // 5. Solicitar leitura de 6 bytes (dados de X, Y, Z)
-    for (int i = 0; i < 6; i++) {
-        *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) = 0x100;  // Cmd para leitura
-    }
-
-    // 6. Verificar o IC_RXFLR para garantir que os dados estejam prontos para leitura
-    while (*((uint32_t *)(i2c_base + IC_RXFLR_REG)) < 6);
-
-    // 7. Ler os dados do IC_DATA_CMD (6 bytes: 2 para X, 2 para Y, 2 para Z)
-    int16_t accel_data[3] = {0};  // Array para armazenar os valores de X, Y, Z
-
-    for (int i = 0; i < 3; i++) {
-        // Lê dois bytes (low byte primeiro, depois o high byte)
-        uint8_t low_byte = *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) & 0xFF;
-        uint8_t high_byte = *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) & 0xFF;
-        accel_data[i] = (int16_t)((high_byte << 8) | low_byte);  // Combinar os dois bytes
-    }*/
-
-    video_open();
+    // Limpa a tela
     video_clear();
 
-    Tabuleiro tab;
-    iniTabuleiro(&tab);
+    // Inicializa o valor
+    int value = 0;
 
-    Peca peca = criarPecasAleatorias();
-
-    //sprintf("sexo", "Score: %d", score); // Atualiza a pontuação e exibe em terminal
-    //video_text(150, 150, "sexo"); // Exibe a pontuação
-
-    const char* asciiArt = 
-    "/***\n"
-    " *                                                                                                  \n"
-    " *                                                                                                  \n"
-    " *                                                                                                  \n"
-    " *                                                                                                  \n"
-    " *                                                                                                  \n"
-    " *                                                                                                  \n"
-    " *        ssssssssss       cccccccccccccccc   ooooooooooo   rrrrr   rrrrrrrrr       eeeeeeeeeeee    \n"
-    " *      ss::::::::::s    cc:::::::::::::::c oo:::::::::::oo r::::rrr:::::::::r    ee::::::::::::ee  \n"
-    " *    ss:::::::::::::s  c:::::::::::::::::co:::::::::::::::or:::::::::::::::::r  e::::::eeeee:::::ee\n"
-    " *    s::::::ssss:::::sc:::::::cccccc:::::co:::::ooooo:::::orr::::::rrrrr::::::re::::::e     e:::::e\n"
-    " *     s:::::s  ssssss c::::::c     ccccccco::::o     o::::o r:::::r     r:::::re:::::::eeeee::::::e\n"
-    " *       s::::::s      c:::::c             o::::o     o::::o r:::::r     rrrrrrre:::::::::::::::::e \n"
-    " *          s::::::s   c:::::c             o::::o     o::::o r:::::r            e::::::eeeeeeeeeee  \n"
-    " *    ssssss   s:::::s c::::::c     ccccccco::::o     o::::o r:::::r            e:::::::e           \n"
-    " *    s:::::ssss::::::sc:::::::cccccc:::::co:::::ooooo:::::o r:::::r            e::::::::e          \n"
-    " *    s::::::::::::::s  c:::::::::::::::::co:::::::::::::::o r:::::r             e::::::::eeeeeeee  \n"
-    " *     s:::::::::::ss    cc:::::::::::::::c oo:::::::::::oo  r:::::r              ee:::::::::::::e  \n"
-    " *      sssssssssss        cccccccccccccccc   ooooooooooo    rrrrrrr                eeeeeeeeeeeeee  \n"
-    " *                                                                                                  \n"
-    " *                                                                                                  \n"
-    " *                                                                                                  \n"
-    " *                                                                                                  \n"
-    " *                                                                                                  \n"
-    " *                                                                                                  \n"
-    " */";
-
-    video_show();
-    while (1)
-    {
-        video_erase ();
-        while (!verificarColisao(&tab, peca))
-        {   
-            
-            video_erase ();
-            sprintf(str, "score: %d", score); // Atualiza a pontuação e exibe em terminal
-            video_text(50,5 , asciiArt); // Exibe a pontuação
-            
-
-            // 4. Escrever no IC_DATA_CMD para solicitar a leitura dos dados de X, Y, Z
-            // Enviar o registrador de início de leitura (0x32 - registrador de dados do ADXL345)
-            *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) = ADXL345_REG_DATA_X0;
-            
-            // 5. Solicitar leitura de 6 bytes (dados de X, Y, Z)
-            for (int i = 0; i < 6; i++) {
-                *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) = 0x100;  // Cmd para leitura
-            }
-
-            // 6. Verificar o IC_RXFLR para garantir que os dados estejam prontos para leitura
-            while (*((uint32_t *)(i2c_base + IC_RXFLR_REG)) < 6);
-
-            // 7. Ler os dados do IC_DATA_CMD (6 bytes: 2 para X, 2 para Y, 2 para Z)
-            int16_t accel_data[3] = {0};  // Array para armazenar os valores de X, Y, Z
-
-            for (int i = 0; i < 3; i++) {
-                // Lê dois bytes (low byte primeiro, depois o high byte)
-                uint8_t low_byte = *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) & 0xFF;
-                uint8_t high_byte = *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) & 0xFF;
-                accel_data[i] = (int16_t)((high_byte << 8) | low_byte);  // Combinar os dois bytes
-            }
-
-            //accel_read(&acel_rdy, &acel_tap, &acel_dtap, &acel_x, &acel_y, &acel_z, &acel_mg);
-            printf("\n------------------------------------\n");
-            printf("Aceleração em X: %d\n", accel_data[0]);
-            printf("Aceleração em Y: %d\n", accel_data[1]);
-            printf("Aceleração em Z: %d\n", accel_data[2]);
-            printf("\n------------------------------------\n");
-
-
-            desenhaPeca(peca);
-
-            moverPeca(&peca, 10); // move para baixo
-            if (accel_data[0] < -10)
-            {
-                moverDirOuEsq(&tab, &peca, -10);
-            } // move para a esquerda
-            else if (accel_data[0]> 10)
-            {
-                moverDirOuEsq(&tab, &peca, 10);
-            } // move para a direita
-
-            video_clear();
-
-            desenhaPeca(peca);
-            mostrarAllPecas(&tab);
-
-            video_show();
-            usleep(500000 + velocidade);
-        }
-
-        addPecaNoTabuleiro(&tab, peca);
-        verificaLinhaCompleta(&tab);
-
-        peca = criarPecasAleatorias();
+    // Loop para aumentar o valor
+    for (int i = 0; i < 10; i++) { // Aumenta o valor 10 vezes
+        draw_ascii_art(10, 5, video_WHITE, value); // Exibe a arte ASCII e o valor
+        video_show(); // Mostra o que foi desenhado
+        value++; // Aumenta o valor
+        sleep(1); // Espera 1 segundo antes de atualizar
+        video_clear(); // Limpa a tela para a próxima iteração
     }
 
+    // Espera por uma tecla para sair
+    printf("Pressione qualquer tecla para sair...\n");
+    getchar();
+
+    // Código para fechar o dispositivo de vídeo
     video_close();
-    //accel_close();
-    //return 0;
-
-    // Imprimir os valores dos eixos X, Y, Z
-    /*
-    printf("Aceleração em X: %d\n", accel_data[0]);
-    printf("Aceleração em Y: %d\n", accel_data[1]);
-    printf("Aceleração em Z: %d\n", accel_data[2]);*/
-
-    // 8. Desabilitar o I2C0 após a operação
-    *((uint32_t *)(i2c_base + IC_ENABLE_REG)) = 0x0;
-    printf("I2C desabilitado\n");
-
-    // Desmapear a memória e fechar o arquivo de memória
-    munmap(i2c_base, MAP_SIZE);
-    close(fd);
-
     return 0;
 }
