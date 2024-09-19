@@ -208,9 +208,16 @@ void desenhaPeca(Peca peca)
             {
                 int x = peca.pos_x + j * BLOCO_TAM;
                 int y = peca.pos_y + i * BLOCO_TAM;
-                video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor); // x = pixel de inicio da peça; x + bloco tam = pixel de fim da peça
-                video_line(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor); // x = pixel de inicio da peça; x + bloco tam = pixel de fim da peça
 
+                // Desenhar o quadrado preenchido
+                video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor);
+
+                // Desenhar a linha cinza ao redor do quadrado
+                short cor_borda = 0xA0A0A0; // Cor cinza
+                video_line(x, y, x + BLOCO_TAM - 1, y, cor_borda);             // Linha superior
+                video_line(x, y, x, y + BLOCO_TAM - 1, cor_borda);             // Linha esquerda
+                video_line(x + BLOCO_TAM - 1, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, cor_borda); // Linha direita
+                video_line(x, y + BLOCO_TAM - 1, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, cor_borda); // Linha inferior
             }
         }
     }
