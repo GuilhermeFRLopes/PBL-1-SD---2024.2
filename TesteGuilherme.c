@@ -209,6 +209,8 @@ void desenhaPeca(Peca peca)
                 int x = peca.pos_x + j * BLOCO_TAM;
                 int y = peca.pos_y + i * BLOCO_TAM;
                 video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor); // x = pixel de inicio da peça; x + bloco tam = pixel de fim da peça
+                video_line(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor); // x = pixel de inicio da peça; x + bloco tam = pixel de fim da peça
+
             }
         }
     }
@@ -344,6 +346,8 @@ void addPecaNoTabuleiro(Tabuleiro *tabuleiro, Peca peca)
                 x = peca.pos_x + (j * BLOCO_TAM);
                 y = peca.pos_y + (i * BLOCO_TAM);
                 video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor);
+                video_line(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor);
+
             }
 
             // faz com que mostre na tela as posições que já estão ativas no tabuleiro
@@ -368,6 +372,7 @@ void mostrarAllPecas(Tabuleiro *tab){
                 int x = (j * BLOCO_TAM);
                 int y = (i * BLOCO_TAM);
                 video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, tab->cor[i][j]);
+                video_line(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, tab->cor[i][j]);
             }
         }
 
