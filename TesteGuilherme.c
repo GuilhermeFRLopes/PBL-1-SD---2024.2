@@ -419,7 +419,7 @@ void verificaLinhaCompleta(Tabuleiro *tab)
 }
 
 
-
+//fonte é: big;
 void desenhaText(){
     char nomePause[7][100] = {
 "     _____    ",                 
