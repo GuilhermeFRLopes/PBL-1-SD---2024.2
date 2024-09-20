@@ -1,0 +1,24 @@
+# Compilador
+CC = gcc
+
+# Arquivos-fonte
+SRC = Accel.c O_JOGO.c
+
+# Nome do executável
+TARGET = executavel
+
+# Flags adicionais
+TAGS = -lintelfpgaup
+CCTAG = -std=c99
+
+# Regra para compilar todos os arquivos em um único executável
+$(TARGET): $(SRC)
+	$(CC) $(SRC) -o $(TARGET) $(TAGS) $(CCTAG)
+
+# Regra para rodar o programa
+run: $(TARGET)
+	./$(TARGET)
+
+# Regra para limpar os arquivos gerados
+clean:
+	rm -f $(TARGET)
