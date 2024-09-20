@@ -6,25 +6,26 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <intelfpgaup/video.h>
+#include <intelfpgaup/KEY.h>
 #include <time.h>
 
-#define I2C0_BASE_ADDR 0xFFC04000  // Endereço base do I2C0
-#define IC_CON_OFFSET 0x0           // Deslocamento do registrador ic_con
-#define MAP_SIZE        0x1000        // Tamanho do mapeamento de memória
+#define I2C0_BASE_ADDR 0xFFC04000 // Endereço base do I2C0
+#define IC_CON_OFFSET 0x0         // Deslocamento do registrador ic_con
+#define MAP_SIZE 0x1000           // Tamanho do mapeamento de memória
 
-#define IC_TAR_REG      0x04          // Offset do registrador IC_TAR
+#define IC_TAR_REG 0x04                             // Offset do registrador IC_TAR
 #define IC_CON_REG (I2C0_BASE_ADDR + IC_CON_OFFSET) // Correto
-#define IC_DATA_CMD_REG  0x10          // Offset do registrador IC_DATA_CMD
-#define IC_ENABLE_REG    0x6C          // Offset do registrador IC_ENABLE
-#define IC_RXFLR_REG     0x78          // Offset do registrador IC_RXFLR
+#define IC_DATA_CMD_REG 0x10                        // Offset do registrador IC_DATA_CMD
+#define IC_ENABLE_REG 0x6C                          // Offset do registrador IC_ENABLE
+#define IC_RXFLR_REG 0x78                           // Offset do registrador IC_RXFLR
 
 // Endereço I2C do ADXL345
-#define ADXL345_ADDR     0x53
+#define ADXL345_ADDR 0x53
 
 // Registradores internos do ADXL345
-#define ADXL345_REG_DATA_X0 0x32       // Registrador inicial dos dados X, Y, Z (6 bytes) 
+#define ADXL345_REG_DATA_X0 0x32 // Registrador inicial dos dados X, Y, Z (6 bytes)
 
-//Logica do game
+// Logica do game
 #define BLOCO_TAM 10
 #define LARGURA_TELA 300
 #define ALTURA_TELA 200
@@ -62,7 +63,7 @@ Peca criarPeca(short cor)
 {
     Peca pecaL;
     pecaL.pos_x = (60) - (BLOCO_TAM * 1); // Centraliza a peça
-    pecaL.pos_y = 0;                                    // Começa no topo da tela
+    pecaL.pos_y = 0;                      // Começa no topo da tela
     pecaL.tam_x = 3;
     pecaL.tam_y = 2;
 
@@ -105,9 +106,9 @@ Peca criarPecasAleatorias()
 
     Peca peca;
     peca.pos_x = (60) - (BLOCO_TAM * 1); // Centraliza a peça
-    peca.pos_y = 0;                                    // Começa no topo da tela
-    peca.tam_x = 4;                                    // Dimensão máxima 4x4 para qualquer peça
-    peca.tam_y = 4;                                    // TESTAR SEM
+    peca.pos_y = 0;                      // Começa no topo da tela
+    peca.tam_x = 4;                      // Dimensão máxima 4x4 para qualquer peça
+    peca.tam_y = 4;                      // TESTAR SEM
 
     // Inicializa a matriz de quadrados como inativa
     for (int i = 0; i < 4; i++)
@@ -162,7 +163,7 @@ Peca criarPecasAleatorias()
         peca.quadrados[1][1].ativo = true;
         peca.quadrados[1][2].ativo = true;
         peca.quadrados[2][1].ativo = true;
-        break;    
+        break;
     case 7: // Peça "---"
         peca.quadrados[0][0].ativo = true;
         peca.quadrados[0][1].ativo = true;
@@ -208,9 +209,7 @@ void desenhaPeca(Peca peca)
             {
                 int x = peca.pos_x + j * BLOCO_TAM;
                 int y = peca.pos_y + i * BLOCO_TAM;
-                video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor); // x = pixel de inicio da peça; x + bloco tam = pixel de fim da peça
-                video_line(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor); 
-
+                video_box(x, y, x + BLOCO_TAM - 2, y + BLOCO_TAM - 2, peca.quadrados[i][j].cor); // x = pixel de inicio da peça; x + bloco tam = pixel de fim da peça
             }
         }
     }
@@ -231,7 +230,7 @@ void desenhaPeca(Peca peca)
 
 void moverPeca(Peca *peca, int dy)
 {
-    //printf("\npos: %d\n", peca->pos_y);
+    // printf("\npos: %d\n", peca->pos_y);
     peca->pos_y += dy;
 }
 
@@ -299,7 +298,7 @@ bool verificarColisao(Tabuleiro *tabuleiro, Peca peca)
                 int y = (peca.pos_x / BLOCO_TAM) + j;
 
                 // verifica se a peça está dentro do tabuleiro
-                if (x < 0 || x+1 >= LINHA_TABULEIRO || y < 0 || y >= COLUNA_TABULEIRO)
+                if (x < 0 || x + 1 >= LINHA_TABULEIRO || y < 0 || y >= COLUNA_TABULEIRO)
                 {
                     return true;
                 }
@@ -346,8 +345,6 @@ void addPecaNoTabuleiro(Tabuleiro *tabuleiro, Peca peca)
                 x = peca.pos_x + (j * BLOCO_TAM);
                 y = peca.pos_y + (i * BLOCO_TAM);
                 video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor);
-                video_line(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, peca.quadrados[i][j].cor);
-
             }
 
             // faz com que mostre na tela as posições que já estão ativas no tabuleiro
@@ -361,7 +358,8 @@ void addPecaNoTabuleiro(Tabuleiro *tabuleiro, Peca peca)
     }
 }
 
-void mostrarAllPecas(Tabuleiro *tab){
+void mostrarAllPecas(Tabuleiro *tab)
+{
     for (int i = 0; i < LINHA_TABULEIRO; i++)
     {
         for (int j = 0; j < COLUNA_TABULEIRO; j++)
@@ -371,17 +369,13 @@ void mostrarAllPecas(Tabuleiro *tab){
             {
                 int x = (j * BLOCO_TAM);
                 int y = (i * BLOCO_TAM);
-                video_box(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, tab->cor[i][j]);
-                video_line(x, y, x + BLOCO_TAM - 1, y + BLOCO_TAM - 1, tab->cor[i][j]);
+                video_box(x, y, x + BLOCO_TAM - 2, y + BLOCO_TAM - 2, tab->cor[i][j]);
             }
         }
 
-        video_box(0, 200, 110, 210, video_WHITE);//desenha o limite do linha
-        video_box(100, 0, 110, 210, video_WHITE);//desenha o limite da coluna
-
+        video_box(0, 200, 110, 210, video_GREEN); // desenha o limite do linha
+        video_box(100, 0, 110, 210, video_GREEN); // desenha o limite da coluna
     }
-
-
 }
 
 void verificaLinhaCompleta(Tabuleiro *tab)
@@ -403,7 +397,7 @@ void verificaLinhaCompleta(Tabuleiro *tab)
         if (linhaCompleta == COLUNA_TABULEIRO)
         {
             score += 10;
-            velocidade -= 2000;
+            velocidade -= 3500;
             for (j = 0; j < COLUNA_TABULEIRO; j++)
             {
                 tab->ocupado[i][j] = false; // tira os blocos da linha completa
@@ -416,74 +410,219 @@ void verificaLinhaCompleta(Tabuleiro *tab)
                     if (tab->ocupado[p][k] == true)
                     {
                         tab->ocupado[p + 1][k] = tab->ocupado[p][k]; // faz com que desça o bloco para a linha que foi desocupada
-                        tab->ocupado[p][k] = false; 
+                        tab->ocupado[p][k] = false;
                     }
                 }
             }
         }
     }
 }
-const char* asciiArt[] = {
-    "    ssssssssss       cccccccccccccccc   ooooooooooo   rrrrr   rrrrrrrrr       eeeeeeeeeeee    ",
-    "  ss::::::::::s    cc:::::::::::::::c oo:::::::::::oo r::::rrr:::::::::r    ee::::::::::::ee  ",
-    "ss:::::::::::::s  c:::::::::::::::::co:::::::::::::::or:::::::::::::::::r  e::::::eeeee:::::ee",
-    "s::::::ssss:::::sc:::::::cccccc:::::co:::::ooooo:::::orr::::::rrrrr::::::re::::::e     e:::::e",
-    " s:::::s  ssssss c::::::c     ccccccco::::o     o::::o r:::::r     r:::::re:::::::eeeee::::::e",
-    "   s::::::s      c:::::c             o::::o     o::::o r:::::r     rrrrrrre:::::::::::::::::e ",
-    "      s::::::s   c:::::c             o::::o     o::::o r:::::r            e::::::eeeeeeeeeee  ",
-    "ssssss   s:::::s c::::::c     ccccccco::::o     o::::o r:::::r            e:::::::e           ",
-    "s:::::ssss::::::sc:::::::cccccc:::::co:::::ooooo:::::o r:::::r            e::::::::e          ",
-    "s::::::::::::::s  c:::::::::::::::::co:::::::::::::::o r:::::r             e::::::::eeeeeeee  ",
-    " s:::::::::::ss    cc:::::::::::::::c oo:::::::::::oo  r:::::r              ee:::::::::::::e  ",
-    "  sssssssssss        cccccccccccccccc   ooooooooooo    rrrrrrr                eeeeeeeeeeeeee  "
-};
 
-void draw_ascii_art(int start_x, int start_y, short color, int value) {
-    char single_char[2]; // Array para armazenar um único caractere e o terminador nulo
-    single_char[1] = '\0'; // Define o terminador nulo
 
-    // Desenha a arte ASCII
-    for (int i = 0; i < 12; i++) { // Atualiza para 12 linhas
-        for (int j = 0; asciiArt[i][j] != '\0'; j++) { // Para cada caractere na linha
-            if (asciiArt[i][j] != ' ') { // Se não for um espaço
-                single_char[0] = asciiArt[i][j]; // Armazena o caractere
-                video_text(start_x + j, start_y + i, single_char); // Desenha o caractere
-            }
-        }
+
+void desenhaText(){
+    char nomePause[7][100] = {
+"     _____    ",                 
+"    |  __ \\      ",              
+"    | |__| |_ _ _   _ ___  ___ ",
+"    |  ___/ _` | | | / __|/ _ \\ ",
+"    | |  | |_| | |_| \\__ \\  __/ ",
+"    |_|   \\__,_|\\__,_|___/\\___| ",
+"                                ",
+    };
+
+    int i = 0;
+    for (i; i < 7; i++){
+        video_text(12, i, nomePause[i]); // Desenha o caractere
     }
-
-    // Desenha o valor ao lado da arte ASCII
-    char value_str[20];
-    sprintf(value_str, " Valor: %d", value);
-    video_text(start_x + 60, start_y + 5, value_str); // Ajuste a posição conforme necessário
 }
-int main() {
-    // Código para abrir o dispositivo de vídeo
-    if (!video_open()) {
-        printf("Erro ao abrir o dispositivo de vídeo.\n");
+
+
+int main()
+{
+    int fd;
+    void *i2c_base;
+
+    // Abrir /dev/mem para acessar a memória do sistema
+    fd = open("/dev/mem", O_RDWR | O_SYNC);
+    if (fd == -1)
+    {
+        perror("Erro ao abrir /dev/mem");
         return -1;
     }
 
-    // Limpa a tela
-    video_clear();
-
-    // Inicializa o valor
-    int value = 0;
-
-    // Loop para aumentar o valor
-    for (int i = 0; i < 10; i++) { // Aumenta o valor 10 vezes
-        draw_ascii_art(10, 5, video_WHITE, value); // Exibe a arte ASCII e o valor
-        video_show(); // Mostra o que foi desenhado
-        value++; // Aumenta o valor
-        sleep(1); // Espera 1 segundo antes de atualizar
-        video_clear(); // Limpa a tela para a próxima iteração
+    // Mapear a memória do controlador I2C0
+    i2c_base = mmap(NULL, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, I2C0_BASE_ADDR);
+    if (i2c_base == MAP_FAILED)
+    {
+        perror("Erro ao mapear a memória do I2C");
+        close(fd);
+        return -1;
     }
 
-    // Espera por uma tecla para sair
-    printf("Pressione qualquer tecla para sair...\n");
-    getchar();
+    // Configurar o registrador IC_CON para:
+    // - Mestre
+    // - Modo rápido (400 kbit/s)
+    // - Endereçamento de 7 bits
+    // - Reinício habilitado
+    uint32_t ic_con_value = 0x65;
+    *((volatile uint32_t *)(i2c_base + IC_CON_OFFSET)) = ic_con_value; // Corrigido
+    printf("Registrador IC_CON configurado com valor: 0x%X\n", ic_con_value);
 
-    // Código para fechar o dispositivo de vídeo
+    // Configurar o registrador IC_TAR para:
+    // - Endereço de escravo ADXL345 (0x53)
+    // - Endereçamento de 7 bits
+    uint32_t ic_tar_value = 0x53; // Endereço de escravo (7 bits)
+    *((uint32_t *)(i2c_base + IC_TAR_REG)) = ic_tar_value;
+    printf("Registrador IC_TAR configurado com valor: 0x%X\n", ic_tar_value); // 3. Habilitar o I2C0
+    *((uint32_t *)(i2c_base + IC_ENABLE_REG)) = 0x1;
+    printf("I2C habilitado\n");
+
+    /*
+    // 4. Escrever no IC_DATA_CMD para solicitar a leitura dos dados de X, Y, Z
+    // Enviar o registrador de início de leitura (0x32 - registrador de dados do ADXL345)
+    *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) = ADXL345_REG_DATA_X0;
+
+    // 5. Solicitar leitura de 6 bytes (dados de X, Y, Z)
+    for (int i = 0; i < 6; i++) {
+        *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) = 0x100;  // Cmd para leitura
+    }
+
+    // 6. Verificar o IC_RXFLR para garantir que os dados estejam prontos para leitura
+    while (*((uint32_t *)(i2c_base + IC_RXFLR_REG)) < 6);
+
+    // 7. Ler os dados do IC_DATA_CMD (6 bytes: 2 para X, 2 para Y, 2 para Z)
+    int16_t accel_data[3] = {0};  // Array para armazenar os valores de X, Y, Z
+
+    for (int i = 0; i < 3; i++) {
+        // Lê dois bytes (low byte primeiro, depois o high byte)
+        uint8_t low_byte = *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) & 0xFF;
+        uint8_t high_byte = *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) & 0xFF;
+        accel_data[i] = (int16_t)((high_byte << 8) | low_byte);  // Combinar os dois bytes
+    }*/
+
+    video_open();
+    video_clear();
+
+    Tabuleiro tab;
+    iniTabuleiro(&tab);
+
+    Peca peca = criarPecasAleatorias();
+
+    // sprintf("sexo", "Score: %d", score); // Atualiza a pontuação e exibe em terminal
+    // video_text(150, 150, "sexo"); // Exibe a pontuação
+
+    video_show();
+
+    int pause;
+    int valor = 1;
+    KEY_open();
+
+    while (1)
+    {
+        video_erase();
+        while (!verificarColisao(&tab, peca))
+        {
+            usleep(500000 + velocidade);
+            KEY_read(&pause);
+            printf("-------------------sdasadasdsadasdval botao: %d", pause);
+            if (pause != 0)
+            {
+                valor *= -1;
+            }
+
+            if (valor == 1)
+            {
+                video_erase();
+                sprintf(str, "Score: %d", score); // Atualiza a pontuação e exibe em terminal
+                video_text(50, 5, str);           // Exibe a pontuação
+
+                // 4. Escrever no IC_DATA_CMD para solicitar a leitura dos dados de X, Y, Z
+                // Enviar o registrador de início de leitura (0x32 - registrador de dados do ADXL345)
+                *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) = ADXL345_REG_DATA_X0;
+
+                // 5. Solicitar leitura de 6 bytes (dados de X, Y, Z)
+                for (int i = 0; i < 6; i++)
+                {
+                    *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) = 0x100; // Cmd para leitura
+                }
+
+                // 6. Verificar o IC_RXFLR para garantir que os dados estejam prontos para leitura
+                while (*((uint32_t *)(i2c_base + IC_RXFLR_REG)) < 6)
+                    ;
+
+                // 7. Ler os dados do IC_DATA_CMD (6 bytes: 2 para X, 2 para Y, 2 para Z)
+                int16_t accel_data[3] = {0}; // Array para armazenar os valores de X, Y, Z
+
+                for (int i = 0; i < 3; i++)
+                {
+                    // Lê dois bytes (low byte primeiro, depois o high byte)
+                    uint8_t low_byte = *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) & 0xFF;
+                    uint8_t high_byte = *((uint32_t *)(i2c_base + IC_DATA_CMD_REG)) & 0xFF;
+                    accel_data[i] = (int16_t)((high_byte << 8) | low_byte); // Combinar os dois bytes
+                }
+
+                // accel_read(&acel_rdy, &acel_tap, &acel_dtap, &acel_x, &acel_y, &acel_z, &acel_mg);
+                printf("\n------------------------------------\n");
+                printf("Aceleração em X: %d\n", accel_data[0]);
+                printf("Aceleração em Y: %d\n", accel_data[1]);
+                printf("Aceleração em Z: %d\n", accel_data[2]);
+                printf("\n------------------------------------\n");
+
+                desenhaPeca(peca);
+
+                moverPeca(&peca, 10); // move para baixo
+                if (accel_data[0] < -10)
+                {
+                    moverDirOuEsq(&tab, &peca, -10);
+                } // move para a esquerda
+                else if (accel_data[0] > 10)
+                {
+                    moverDirOuEsq(&tab, &peca, 10);
+                } // move para a direita
+
+                video_clear();
+
+                desenhaPeca(peca);
+                mostrarAllPecas(&tab);
+
+                video_show();
+            }
+            else
+            {   
+                desenhaText();
+                KEY_read(&pause);
+                if (pause != 0)
+                {
+                    valor *= -1;
+                    
+                }
+            }
+        }
+
+        addPecaNoTabuleiro(&tab, peca);
+        verificaLinhaCompleta(&tab);
+
+        peca = criarPecasAleatorias();
+    }
+
     video_close();
+    // accel_close();
+    // return 0;
+
+    // Imprimir os valores dos eixos X, Y, Z
+    /*
+    printf("Aceleração em X: %d\n", accel_data[0]);
+    printf("Aceleração em Y: %d\n", accel_data[1]);
+    printf("Aceleração em Z: %d\n", accel_data[2]);*/
+
+    // 8. Desabilitar o I2C0 após a operação
+    *((uint32_t *)(i2c_base + IC_ENABLE_REG)) = 0x0;
+    printf("I2C desabilitado\n");
+
+    // Desmapear a memória e fechar o arquivo de memória
+    munmap(i2c_base, MAP_SIZE);
+    close(fd);
+
     return 0;
 }
