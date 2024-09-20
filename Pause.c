@@ -5,7 +5,7 @@ const char* asciiText[] = {
     "▐▌   ▐▌ ▐▌▝▚▄▞▘▗▄▄▞▘▐▙▄▄▖"
 };
 
-void draw_ascii_text(int start_x, int start_y) {
+void draw_ascii_text(int start_x, int start_y, video_WHITE, value) {
     char single_char[2]; // Array para armazenar um único caractere e o terminador nulo
     single_char[1] = '\0'; // Define o terminador nulo
 
@@ -21,18 +21,13 @@ void draw_ascii_text(int start_x, int start_y) {
 }
 
 int main() {
-    // Definindo as coordenadas de início
-    int start_x = 10;
-    int start_y = 5;
-
-    // Definir o valor que será exibido ao lado da arte
-    int value = 1234;
-
-    // Chama a função para desenhar a arte ASCII
-    draw_ascii_art(start_x, start_y, 0, value);
-
-    // Chama a função para desenhar o texto fornecido
-    draw_ascii_text(start_x, start_y + 15); // Desenha o texto um pouco abaixo da arte
-    
+    // Loop para aumentar o valor
+    for (int i = 0; i < 10; i++) { // Aumenta o valor 10 vezes
+        draw_ascii_text(10, 5, video_WHITE, value); // Exibe a arte ASCII e o valor
+        video_show(); // Mostra o que foi desenhado
+        value++; // Aumenta o valor
+        sleep(1); // Espera 1 segundo antes de atualizar
+        video_clear(); // Limpa a tela para a próxima iteração
+    }
     return 0;
 }
