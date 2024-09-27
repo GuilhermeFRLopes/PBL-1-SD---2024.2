@@ -29,7 +29,7 @@ O projeto em questão faz uso de hardware específico para seu desenvolvimento, 
 
 ### teasIC DE1-SoC - Especificações
 
-![1708714739472](image/README/1708714739472.png)
+![Foto da Placa](Foto%20da%20Placa.png)
 
 | Categoria                               | Detalhes                                       |
 | --------------------------------------- | ---------------------------------------------- |
@@ -130,7 +130,7 @@ Visual Studio Code (VS Code): é um editor de código-fonte gratuito e de códig
 
 O fluxograma abaixo apresenta a maneira como o sistema se comporta de forma geral durante a execução do projeto:
 
-![1708688254235](image/README/1708688254235.png)
+![Fluxograma do Tetris](Fluxograma%20do%20Tetris.jpg)
 
 **1. Inicialização:**
 
@@ -163,7 +163,7 @@ O fluxograma abaixo apresenta a maneira como o sistema se comporta de forma gera
 
 O fluxograma abaixo apresenta a maneira como o projeto do jogo foi elaborado:
 
-![1708633969184](image/README/1708633969184.png)
+![Fluxograma do Tetris](Fluxograma%20do%20Tetris.jpg)
 
 O processo de funcionamento do jogo acontece da seguinte forma:
 
