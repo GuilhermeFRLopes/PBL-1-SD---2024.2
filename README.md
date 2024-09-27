@@ -310,7 +310,7 @@ Abaixo são apresentadas as telas de execução do jogo, pausa e fim do jogo.
 <div style="display: flex; justify-content: space-between;">
     <img src="folder/game%20funcionando.jpg" alt="descrição" width="400" height="300">
     <img src="folder/pause.jpg" alt="descrição" width="400" height="300">
-    <img src="folder/game over.jpg" alt="descrição" width="400" height="300">
+    <img src="folder/game_over.jpeg" alt="descrição" width="400" height="300">
 
 </div>
 
