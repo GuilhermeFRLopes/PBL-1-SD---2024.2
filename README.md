@@ -17,13 +17,13 @@ Grupo: [Guilherme Ferreira Rocha Lopes](https://github.com/GuilhermeFRLopes), [T
 7. [Problemas](#problemas)
 8. [Execução do jogo](#execução-do-jogo)
 
-## Introdução
+## `Introdução`
 
 Este documento descreve em detalhes o desenvolvimento de um jogo de quebra-cabeça  conhecido como Tetris. Utiliza a linguagem C e é implementado na placa de desenvolvimento modelo [DE1-SoC da terasIC](https://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&CategoryNo=167&No=836#contents).
 
 O projeto consiste em um jogo de Tetris, onde peças de diferentes formatos caem do topo do espaço de jogo. O jogador pode mover as peças horizontalmente para que se encaixem nas linhas na parte inferior da tela. Quando uma linha é completada, ela é eliminada, permitindo que novas peças continuem caindo. O jogo dispõe de opções de pausa e reinício que são acessadas através dos botões, e a exibição do jogo é feita em um monitor de tubo.
 
-## Hardware Utilizado
+## `Hardware Utilizado`
 
 O projeto em questão faz uso de hardware específico para seu desenvolvimento, sendo empregada uma placa de desenvolvimento DE1-SoC da terasIC . Ela é  ideal para diversos projetos de prototipagem e desenvolvimento de sistemas embarcados. Ela combina um FPGA Cyclone V SoC da Intel com um processador dual-core ARM Cortex-A9, oferecendo uma plataforma completa e flexível para implementação de hardware e software. Seu acesso para a execução do jogo é feito através da conexão via SSH (ethernet) no terminal de um computador.
 
@@ -118,13 +118,13 @@ O projeto em questão faz uso de hardware específico para seu desenvolvimento, 
 |     **Resolução Máxima**     | 1280 x 1024 pixels |
 |    **Resolução do Display**    | 1024 x 768 pixels |
 
-## Software utilizado
+## `Software utilizado`
 
 Para o desenvolvimento e execução dos códigos, o Visual Studio Code foi utilizado como ferramenta de escrita.
 
 Visual Studio Code (VS Code): é um editor de código-fonte gratuito e de código aberto desenvolvido pela Microsoft. É multiplataforma, altamente extensível, oferece integração com Git, suporte a várias linguagens de programação, ferramentas de depuração integradas e um terminal incorporado.
 
-## Metodologia
+## `Metodologia`
 
 ### Fluxograma do funcionamento do sistema
 
@@ -192,11 +192,11 @@ O processo de funcionamento do jogo acontece da seguinte forma:
 * O jogador pode pausar e retomar o jogo a qualquer momento pressionando qualquer botão presente na placa ([Ver imagem da placa](#teasic-de1-soc---especificações)).
 * O jogador pode resetar o jogo após mensagem de gamer over, pressionando qualquer botão presente na placa ([Ver imagem da placa](#teasic-de1-soc---especificações)).
 
-### Solução do Problema
+## `Solução do Problema`
 
 Para a solução do problema foi utilizada a linguagem de programação C, bem como a utilização da interface de desenvolvimento (IDE) Visual Studio Code, para a elaboração dos códigos fonte. O projeto foi sintetizado utilizando um computador de placa única, o DE1-Soc, ao qual foi conectado um monitor de tubo Dell para exibição do jogo.
 
-#### Bibliotecas utilizadas
+### Bibliotecas utilizadas
 
 Para auxiliar no desenvolvimento do código em C do Jogo foram utilizadas as seguintes bibliotecas: **Stdio**, **stdlib**, **stdint**, **time**, **sys/mman**, **fcntl**, **Stdbool**, **Intelfpgaup/KEY** e **Intelfpgaup/video**.
 
@@ -214,16 +214,19 @@ Para auxiliar no desenvolvimento do código em C do Jogo foram utilizadas as seg
 
 As bibliotecas **Stdio** **stdlib**, **stdint**, **time**, **Stdbool** fornecem funções para diversas tarefas em C, como manipulação de entrada/saída, operações de baixo nível em sistemas Unix-like e tipos booleanos.
 
-**sys/mman:** Essa biblioteca fornece funções para gerenciamento de memória, especialmente para mapeamento de arquivos ou dispositivos na memória. As principais funções dessa biblioteca incluem:
-  * **mmap():** Permite mapear arquivos ou dispositivos para a memória do processo, facilitando o acesso aos dados sem precisar usar funções tradicionais de leitura e escrita. Isso é útil para melhorar o desempenho ao trabalhar com grandes quantidades de dados.
+### #include <sys/mman.h> 
 
-* **munmap():** Desfaz o mapeamento de um bloco de memória previamente mapeado.
+Essa biblioteca fornece funções para gerenciamento de memória, especialmente para mapeamento de arquivos ou dispositivos na memória. As principais funções dessa biblioteca incluem:
 
-* **mprotect():** Modifica as permissões de acesso a um bloco de memória.
+- **`mmap()`**: Permite mapear arquivos ou dispositivos para a memória do processo, facilitando o acesso aos dados sem precisar usar funções tradicionais de leitura e escrita. Isso é útil para melhorar o desempenho ao trabalhar com grandes quantidades de dados.
+
+- **`munmap():`**: Desfaz o mapeamento de um bloco de memória previamente mapeado.
+
+- **`mprotect()`**: Modifica as permissões de acesso a um bloco de memória.
 
 * Essa biblioteca é frequentemente usada em aplicações que exigem acesso  rápido e eficiente a grandes volumes de dados ou para manipulação direta  de memória.
 
-## `#include <fcntl.h>`
+### #include <fcntl.h>
 
 Essa biblioteca contém definições relacionadas a arquivos e controladores de entrada/saída. As principais funções e constantes que ela oferece incluem:
 
@@ -234,35 +237,45 @@ Essa biblioteca contém definições relacionadas a arquivos e controladores de 
 - **`fcntl`**: Permite modificar propriedades de um descritor de arquivo, como bloqueios ou modos de operação.
 
 
-**intelfpgaup/KEY:**  Oferece funções para a utilização dos botões (KEYS) da placa tais como as utilizadas:
+### #include <intelfpgaup/KEY.h>
 
-* **KEY_open():** abre o dispositivo para os botões;
-* **KEY_read():** lê as entradas recebidas pelo dispositivo para os botões;
-* **KEY_close():** fecha o dispositivo para os botões.
+Oferece funções para a utilização dos botões (KEYS) da placa tais como as utilizadas:
 
-**Intelfpgaup/video:**  Oferece funções para utilização do VGA da placa para criação de gráficos, com funções para desenho de linhas, retângulos e texto. As utilizadas foram:
+- **`KEY_open()`**: abre o dispositivo para os botões;
+- **`KEY_read()`**: lê as entradas recebidas pelo dispositivo para os botões;
+- **`KEY_close()`**: fecha o dispositivo para os botões.
 
-* **video_open():** abre o dispositivo de vídeo VGA;
-* **video_erase():** limpa todos e apenas os textos que estivessem escritos na tela;
-* **video_clear():** limpa todas as imagens que estivessem exibidas na tela;
-* **video_show():** exibe na tela todos os elementos dispostos no buffer de video, tais como textos ou desenhos (linhas ou retângulos/boxes);
-* **video_text():** dispõe no buffer de vídeo um texto de tamanho fixo a ser exibido na tela, selecionando-se sua posição em eixos X e Y;
-* **video_box():** dispõe no buffer de vídeo um retângulo/box a ser exibido na tela, selecionando-se os pontos iniciais e finais em coordenadas de X e Y e a cor da figura a ser gerada;
-* **video_close():** fecha o dispositivo de vídeo VGA.
+### #include <intelfpgaup/video.h>
+
+Oferece funções para utilização do VGA da placa para criação de gráficos, com funções para desenho de linhas, retângulos e texto. As utilizadas foram:
+
+- **`video_open()`**: abre o dispositivo de vídeo VGA;
+
+- **`video_erase()`**: limpa todos e apenas os textos que estivessem escritos na tela;
+
+- **`video_clear()`**: limpa todas as imagens que estivessem exibidas na tela;
+
+- **`video_show()`**: exibe na tela todos os elementos dispostos no buffer de video, tais como textos ou desenhos (linhas ou retângulos/boxes);
+
+- **`video_text()`**: dispõe no buffer de vídeo um texto de tamanho fixo a ser exibido na tela, selecionando-se sua posição em eixos X e Y;
+
+- **`video_box()`**: dispõe no buffer de vídeo um retângulo/box a ser exibido na tela, selecionando-se os pontos iniciais e finais em coordenadas de X e Y e a cor da figura a ser gerada;
+
+- **`video_close()`**: fecha o dispositivo de vídeo VGA.
 
 ### Telas do jogo
 
-Abaixo são apresentadas as telas de inicio, execução do jogo, pausa e fim do jogo com vitória (You Win!) e derrota (You Lose!) e pause.
+Abaixo são apresentadas as telas de execução do jogo, pausa e fim do jogo.
 
 ![1708711366769](image/README/1708711366769.png)![1708711382866](image/README/1708711382866.png)
 
-## Documentação utilizada
+## `Documentação utilizada`
 
 [**Manual de usuário da placa de desenvolvimento DE1-SoC:** ](https://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&CategoryNo=167&No=836&PartNo=4#contents)Contém todas as informações relacionadas ao funcionamento da DE1-SoC, bem como são realizadas a integração da placa com demais recursos (video externo e acelerômetro).
 
 **[Manual de funções do Linux no ARM A9](https://fpgacademy.org/tutorials.html):** Utilizado para consulta das funções que foram implementadas no código fonte do jogo.
 
-## Testes Realizados
+## `Testes Realizados`
 
 Abaixo são apresentados alguns testes realizados com o proposito de verificar o funcionamento do projeto:
 
@@ -272,16 +285,14 @@ Na imagem 1 é apresentada a tela de inicio com a mensagem: "---START---!", na i
 
 No link a seguir são apresentados videos do funcionamento do jogo: [link aqui](https://imgur.com/a/LQylspQ)
 
-## Problemas
+## `Dificuldades`
 
-Durante o desenvolvimento do jogo, foi apresentado como problema que, no momento em que a bola passa por  baixo da raquete, a bola ricocheteia entre a parte inferior da raquete e a parte inferior da tela do jogo (chão) antes de encerrar o jogo como derrota (YOU LOSE!).
+Inicialmente, optamos pelo desenvolvimento da lógica do jogo, no qual foram propostas ideias sobre como seria o posicionamento das peças. A partir de várias tentativas, consolidamos o uso de uma matriz que permitisse o posicionamento correto das peças, tendo como base as linhas e colunas que proporcionam a ação ideal para a geração precisa dos pixels do bloco. Após isso, concluímos essa etapa e passamos para o desenvolvimento da biblioteca do acelerômetro. A documentação fornecida (**[Manual de funções do Linux no ARM A9](https://fpgacademy.org)**) foi de extrema importância para o entendimento e mapeamento correto dos registradores, além de providenciar funções imprescindíveis e bem detalhadas para a aplicação adequada ao problema.
 
-## Execução do jogo
+## `Execução do jogo`
 
 Em posse do código desse repositório e de uma placa de desenvolvimento DE1-SoC conectada a um monitor, para testar o funcionamento do programa, conecte a placa com um computador e execute o seguinte comando no terminal:
 
 ```
 make all
 ```
-
-#### [Voltar ao topo](#Projeto-de-jogo-Brick-Break-em-Linguagem-C)
