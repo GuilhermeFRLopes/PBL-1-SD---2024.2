@@ -314,8 +314,11 @@ void mostrarAllPecas(Tabuleiro *tab)
             }
         }
 
-        video_box(0, 200, 110, 210, video_GREEN); // desenha o limite do linha
-        video_box(100, 0, 110, 210, video_GREEN); // desenha o limite da coluna
+        video_box(0, 200, 101, 210, video_GREEN); // desenha o limite do linha - baixo
+        video_box(100, 0, 101, 210, video_GREEN); // desenha o limite da coluna - direita
+        video_box(0, 0, 101, 10, video_GREEN); // desenha o limite da coluna - cima
+        video_box(0, 0, 1, 210, video_GREEN); // desenha o limite da coluna - esquerda
+
     }
 }
 
@@ -375,7 +378,7 @@ void desenhaText()
     int i = 0;
     for (i; i < 7; i++)
     {
-        video_text(12, i, nomePause[i]); // Desenha o caractere
+        video_text(25, 20 + i, nomePause[i]); // Desenha o caractere
     }
 }
 
@@ -400,7 +403,7 @@ void desenhaFimDoJogo()
     int i = 0;
     for (i; i < 13; i++)
     {
-        video_text(13, i, nomePause[i]); // Desenha o caractere
+        video_text(25, 10 + i, nomePause[i]); // Desenha o caractere
     }
 
    // sprintf(str, "Score: %d", score); // Atualiza a pontuação e exibe em terminal
@@ -513,8 +516,7 @@ int main()
                 }
 
                 // Verificar o IC_RXFLR para garantir que os dados estejam prontos para leitura
-                while (*((uint32_t *)(i2c_base + IC_RXFLR_REG)) < 6)
-                    ;
+                while (*((uint32_t *)(i2c_base + IC_RXFLR_REG)) < 6);
 
                 // Ler os dados do IC_DATA_CMD (6 bytes: 2 para X, 2 para Y, 2 para Z)
                 int16_t accel_data[3] = {0}; // Array para armazenar os valores de X, Y, Z
@@ -537,11 +539,11 @@ int main()
                 desenhaPeca(peca);
 
                 moverPeca(&peca, 10); // move para baixo
-                if (accel_data[0] < -10)
+                if (accel_data[0] < -5)
                 {
                     moverDirOuEsq(&tab, &peca, -10);
                 } // move para a esquerda
-                else if (accel_data[0] > 10)
+                else if (accel_data[0] > 5)
                 {
                     moverDirOuEsq(&tab, &peca, 10);
                 } // move para a direita
