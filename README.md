@@ -322,7 +322,7 @@ Abaixo são apresentados alguns testes realizados com o proposito de verificar o
   </tr>
 </table>
 
-No link a seguir são apresentados videos do funcionamento do jogo: [link aqui](https://drive.google.com/file/d/1CHKvRcpQTJijqokOSK1fbQ3yyxPCoUO8/view?usp=sharing)
+No link a seguir são apresentados videos do funcionamento do jogo desde seu processo de desenvolvimento até o produto final: [link aqui](https://drive.google.com/drive/folders/19Eo-gqj-8-PrBiq2xdU14lEXvrMBLtFg?usp=sharing)
 
 <a id="dificuldades"></a>
 ## Dificuldades
