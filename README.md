@@ -284,8 +284,19 @@ Abaixo são apresentadas as telas de execução do jogo, pausa e fim do jogo.
 
 Abaixo são apresentados alguns testes realizados com o proposito de verificar o funcionamento do projeto:
 
-![1708711980034](image/README/1708711980034.png)
+<div style="display: flex; justify-content: space-between;">
+    <img src="teste%20tabuleiro.jpg" alt="descrição" width="300" height="200">
+    <img src="teste%20colisao.jpg" alt="descrição" width="300" height="200">
+    <img src="teste.jpg" alt="descrição" width="300" height="200">  
+</div>
 
+## `Peças do jogo`
+<div style="display: flex; justify-content: space-between;">
+    <img src="teste%20tabuleiro.jpg" alt="descrição" width="300" height="200">
+    <img src="teste%20colisao.jpg" alt="descrição" width="300" height="200">
+    <img src="teste.jpg" alt="descrição" width="300" height="200">  
+</div>
+Abaixo são apresentadas todas as peças possíveis no jogo
 Na imagem 1 é apresentada a tela de inicio com a mensagem: "---START---!", na imagem 2 é apresentada o pause durante o jogo e na terceira imagem é apresentado a tela enquanto o jogo está sendo jogado.
 
 No link a seguir são apresentados videos do funcionamento do jogo: [link aqui](https://drive.google.com/file/d/1CHKvRcpQTJijqokOSK1fbQ3yyxPCoUO8/view?usp=sharing)
