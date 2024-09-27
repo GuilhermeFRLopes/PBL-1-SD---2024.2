@@ -38,6 +38,14 @@ int score = 0; // Pontuação do jogador
 
 int velocidade = 0; //velocidade da queda das peças
 char str[15]; // String para exibição da pontuação
+char str1[15]; // String para exibição da pontuação
+char str2[15]; // String para exibição da pontuação
+char str3[15]; // String para exibição da pontuação
+
+
+
+//char jogadores[3] = {"Jogador 1", "Jogador 2", "Jogador 3"};
+int pontos[3] = {0,0,0};
 
 typedef struct
 {
@@ -76,7 +84,7 @@ Peca criarPecasAleatorias()
     short cor = corAleatoria();
 
     // Gera um número aleatório para escolher a peça
-    int tipoPeca = rand() % 9;
+    int tipoPeca = rand() % 10;
 
     Peca peca;
     peca.pos_x = (60) - (BLOCO_TAM * 1); // Centraliza a peça
@@ -93,14 +101,16 @@ Peca criarPecasAleatorias()
         }
     }
 
+    //tipoPeca = 9;
+
     // Define a forma da peça com base no número aleatório
     switch (tipoPeca)
     {
-    case 0: // Peça "I"
+    case 0: // Peça "Z"
         peca.quadrados[0][1].ativo = true;
         peca.quadrados[1][1].ativo = true;
-        peca.quadrados[2][1].ativo = true;
-        peca.quadrados[3][1].ativo = true;
+        peca.quadrados[1][2].ativo = true;
+        peca.quadrados[2][2].ativo = true;
         break;
     case 1: // Peça "O"
         peca.quadrados[1][1].ativo = true;
@@ -126,11 +136,11 @@ Peca criarPecasAleatorias()
         peca.quadrados[2][1].ativo = true;
         peca.quadrados[2][0].ativo = true;
         break;
-    case 5: // Peça "Z"
+    case 5: // Peça "I"
         peca.quadrados[0][1].ativo = true;
         peca.quadrados[1][1].ativo = true;
-        peca.quadrados[1][2].ativo = true;
-        peca.quadrados[2][2].ativo = true;
+        peca.quadrados[2][1].ativo = true;
+        peca.quadrados[3][1].ativo = true;
         break;
     case 6: // Peça "S"
         peca.quadrados[0][2].ativo = true;
@@ -150,12 +160,11 @@ Peca criarPecasAleatorias()
         peca.quadrados[1][2].ativo = true;
         peca.quadrados[0][1].ativo = true;
         break;
-    case 9: // Peça "-|-"
-        peca.quadrados[0][0].ativo = true;
-        peca.quadrados[1][0].ativo = true;
-        peca.quadrados[2][0].ativo = true;
-        peca.quadrados[0][1].ativo = true;
-        peca.quadrados[0][2].ativo = true;
+    case 9: // Peça "0"
+        peca.quadrados[1][1].ativo = true;
+        peca.quadrados[1][2].ativo = true;
+        peca.quadrados[2][1].ativo = true;
+        peca.quadrados[2][2].ativo = true;
         break;
     }
     // Define a cor para os quadrados ativos
@@ -378,7 +387,7 @@ void desenhaText()
     int i = 0;
     for (i; i < 7; i++)
     {
-        video_text(25, 20 + i, nomePause[i]); // Desenha o caractere
+        video_text(30, 20 + i, nomePause[i]); // Desenha o caractere
     }
 }
 
@@ -403,7 +412,7 @@ void desenhaFimDoJogo()
     int i = 0;
     for (i; i < 13; i++)
     {
-        video_text(25, 10 + i, nomePause[i]); // Desenha o caractere
+        video_text(30, 20 + i, nomePause[i]); // Desenha o caractere
     }
 
    // sprintf(str, "Score: %d", score); // Atualiza a pontuação e exibe em terminal
@@ -434,6 +443,7 @@ bool reiniciarGame(Tabuleiro *tabuleiro, Peca peca)
 
 int main()
 {
+    int jogadas = 0;
     int fd;
     void *i2c_base;
 
@@ -493,7 +503,7 @@ int main()
         {
             usleep(500000 + velocidade);
             KEY_read(&pause);
-            printf("botao: %d", pause);
+            //printf("botao: %d", pause);
             if (pause != 0)
             {
                 valor *= -1;
@@ -504,6 +514,18 @@ int main()
                 video_erase();
                 sprintf(str, "Score: %d", score); // Atualiza a pontuação e exibe em terminal
                 video_text(50, 5, str);           // Exibe a pontuação
+
+                pontos[jogadas] = score;
+
+                sprintf(str1, "Jogador 1: %d", pontos[0]); // Atualiza a pontuação e exibe em terminal
+                video_text(50, 7, str1);           // Exibe a pontuação
+
+                sprintf(str2, "Jogador 2: %d", pontos[1]); // Atualiza a pontuação e exibe em terminal
+                video_text(50, 9, str2);           // Exibe a pontuação
+
+                sprintf(str3, "Jogador 3: %d", pontos[2]); // Atualiza a pontuação e exibe em terminal
+                video_text(50, 11, str3);           // Exibe a pontuação
+
 
                 // Escrever no IC_DATA_CMD para solicitar a leitura dos dados de X, Y, Z
                 // Enviar o registrador de início de leitura (0x32 - registrador de dados do ADXL345)
@@ -581,8 +603,17 @@ int main()
                 //video_erase();
                 KEY_read(&pause);
                 if (pause != 0)
-                {
+                {   
+
+                    pontos[jogadas] = score;                    
                     score = 0;
+                    jogadas += 1;
+                    if (jogadas == 3){
+                        jogadas = 0;
+                        pontos[0] = 0;
+                        pontos[1] = 0;
+                        pontos[2] = 0;
+                    }
                     break;
                 }
             }
