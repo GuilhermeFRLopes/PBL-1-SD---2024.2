@@ -371,4 +371,4 @@ Inicialmente, optamos pelo desenvolvimento da lógica do jogo, no qual foram pro
 
 Em posse do código desse repositório e de uma placa de desenvolvimento DE1-SoC conectada a um monitor, para testar o funcionamento do programa, conecte a placa com um computador e execute o seguinte comando no terminal:
 
-make all
+`make all`
