@@ -268,7 +268,33 @@ Oferece funções para utilização do VGA da placa para criação de gráficos,
 
 ### Mapeamento da Memória e utilização do protocolo I2C
 
-Inicialmente definimos constantes para facilitar o acesso aos registradores e controladores I2C e do acelerometro ADXL345. Na sequencia foi feito a abertura e mapeamento de memoria, abrimos o arquivo /dev/mem, que permite acesso à memória física do sistema. Em seguida, foi feito o mapeammmento da a memória do controlador I2C0 para um ponteiro i2c_base, permitindo que o acesso os registradores do I2C diretamente. Na sequencia O registrador IC_CON é configurado para definir o controlador I2C como mestre, configurado no modo rápido (400 kbit/s) e utilizado o endereçamento de 7 bits,  alemm de permitir condições de reinício. Isso tudo configurando o valor: 0x65 no registrador. Depois O registrador IC_TAR é configurado com o endereço do ADXL345 (0x53), que é o endereço do escravo que o controlador I2C irá se comunicar, e o controlador I2C é habilitado escrevendo 0x1 no registrador IC_ENABLE. Depois, escrevemos no registrador IC_DATA_CMD para solicitar a leitura dos dados de aceleração, começando pelo registrador 0x32 do ADXL345. E para a parte de leitura dos dados dos registradores, Um loop é usado para solicitar a leitura de 6 bytes de dados (2 bytes para cada eixo: X, Y, Z), e verificamos o registrador IC_RXFLR para garantir que 6 bytes de dados estejam prontos para leitura antes de prosseguir. E por fim, os dados de aceleração são lidos do registrador IC_DATA_CMD. Para cada eixo (X, Y, Z), dois bytes são lidos (o byte baixo primeiro, seguido pelo byte alto) e combinados para formar um valor de 16 bits.
+### Registradores Mapeados
+<a id="ic_con"></a>
+
+1. IC_CON (Control Register)
+Este registrador define as configurações básicas do controlador I2C, como a velocidade de comunicação (Standard, Fast, ou High-Speed), se a operação será mestre ou escravo, e se a funcionalidade I2C é habilitada ou não. A configuração correta desse registrador é essencial para estabelecer a comunicação adequada com dispositivos conectados ao barramento.
+<a id="ic_tar"></a>
+
+2. IC_TAR (Target Address Register)
+Armazena o endereço do dispositivo escravo ao qual o controlador I2C deseja se conectar. Toda operação de leitura e escrita será direcionada ao endereço especificado nesse registrador, o que permite ao controlador identificar qual dispositivo no barramento será acessado.
+<a id="ic_data_cmd"></a>
+
+3. IC_DATA_CMD (Data Buffer and Command Register)
+Esse registrador serve como um buffer para envio e recepção de dados e comandos. Para escrita, o valor a ser enviado ao escravo é carregado neste registrador. Para leitura, um comando de leitura é enviado através dele, e o valor lido do escravo pode ser extraído posteriormente. Esse registrador é utilizado para as operações de entrada e saída de dados no barramento I2C.
+<a id="ic_enable"></a>
+
+4. IC_ENABLE (Enable Register)
+Controla a ativação e desativação do controlador I2C. Antes de qualquer configuração ou operação, o I2C deve estar desabilitado, e depois de configurar os registradores, deve ser reabilitado para iniciar as transferências de dados.
+<a id="ic_rxflr"></a>
+
+5. IC_RXFLR_REG (Receive FIFO Level Register)
+O registrador IC_RXFLR_REG é utilizado para monitorar o número de bytes presentes na FIFO (First-In-First-Out) de recebimento do controlador I2C. Seu offset de memória é 0x78. Esse registrador é útil para verificar a quantidade de dados recebidos que ainda não foram processados pelo software, permitindo ao controlador gerenciar a leitura dos dados de maneira eficiente e evitar a perda de informações.
+
+Inicialmente, foram definidas constantes para facilitar o acesso aos registradores do controlador I2C e do acelerômetro ADXL345. Em seguida, realizou-se a abertura e o mapeamento da memória, através da abertura do arquivo /dev/mem, que permite o acesso à memória física do sistema. O mapeamento da memória do controlador I2C0 foi então atribuído a um ponteiro denominado i2c_base, possibilitando o acesso direto aos registradores do controlador I2C.
+
+Posteriormente, o registrador [`IC_CON`](#ic_con) foi configurado para definir o controlador I2C como mestre, operando no modo rápido (400 kbit/s) e utilizando endereçamento de 7 bits, além de permitir condições de reinício. Essa configuração foi realizada atribuindo o valor 0x65 ao registrador. Em seguida, o registrador [`IC_TAR`](#ic_tar) foi ajustado com o endereço do dispositivo ADXL345 (0x53), indicando o endereço do dispositivo escravo com o qual o controlador I2C irá se comunicar. Após essas configurações iniciais, o controlador I2C foi habilitado ao escrever o valor 0x1 no registrador IC_ENABLE.
+
+Para solicitar a leitura dos dados de aceleração do ADXL345, o registrador [`IC_DATA_CMD`](#ic_data_cmd) foi utilizado para enviar um comando de leitura a partir do registrador 0x32 do acelerômetro. Durante a leitura dos dados, um loop foi implementado para solicitar a leitura de 6 bytes, correspondendo a 2 bytes para cada eixo (X, Y e Z). Antes de prosseguir, foi verificado o registrador [`IC_RXFLR`](#ic_rxflr) para garantir que os 6 bytes estivessem disponíveis na FIFO de recepção do I2C. Finalmente, os dados de aceleração foram lidos do registrador [`IC_DATA_CMD`](#ic_data_cmd). Para cada eixo, dois bytes foram lidos (primeiro o byte menos significativo, seguido pelo mais significativo) e combinados para formar um valor de 16 bits, representando a aceleração medida para cada eixo.
 
 ### Telas do jogo
 
