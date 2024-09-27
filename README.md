@@ -204,13 +204,21 @@ Para a solução do problema foi utilizada a linguagem de programação C, bem c
 Para auxiliar no desenvolvimento do código em C do Jogo foram utilizadas as seguintes bibliotecas: **Stdio**, **stdlib**, **stdint**, **time**, **sys/mman**, **fcntl**, **Stdbool**, **Intelfpgaup/KEY** e **Intelfpgaup/video**.
 
 ├── stdio.h
+
 ├── stdlib.h
+
 ├── stdint.h
+
 ├── time.h
+
 ├── sys/mman.h
+
 ├── fcntl.h
+
 ├── stdbool.h
+
 ├── intelfpgaup/KEY.h
+
 ├── intelfpgaup/video.h
 
 
