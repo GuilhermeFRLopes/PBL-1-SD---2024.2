@@ -310,7 +310,7 @@ Abaixo são apresentadas as telas de execução do jogo, pausa e fim do jogo.
 <div style="display: flex; justify-content: space-between;">
     <img src="folder/game%20funcionando.jpg" alt="descrição" width="400" height="300">
     <img src="folder/pause.jpg" alt="descrição" width="400" height="300">
-    <img src="folder/pause.jpg" alt="descrição" width="400" height="300">
+    <img src="folder/game over.jpg" alt="descrição" width="400" height="300">
 
 </div>
 
@@ -342,7 +342,7 @@ Abaixo são apresentados alguns testes realizados com o proposito de verificar o
   <tr>
     <td><img src="folder/peça%20j%20invertida.jpg" alt="peça j invertida" width="200" height="200"></td>
     <td><img src="folder/peça%20j.jpg" alt="peça j" width="200" height="200"></td>
-    <td><img src="folder/Peça%20L%20deitada.jpg" alt="peça L deitada" width="200" height="200"></td>
+    <td><img src="folder/traço.jpg" alt="traço deitado" width="200" height="200"></td>
   </tr>
   <tr>
     <td><img src="folder/peça%20l%20invertida.jpg" alt="peça L invertida" width="200" height="200"></td>
@@ -353,9 +353,6 @@ Abaixo são apresentados alguns testes realizados com o proposito de verificar o
     <td><img src="folder/peça%20T.jpg" alt="peça T" width="200" height="200"></td>
     <td><img src="folder/peça%20T%20deitada.jpg" alt="peça T deitada" width="200" height="200"></td>
     <td><img src="folder/traço%20em%20pé.jpg" alt="traço em pé" width="200" height="200"></td>
-  </tr>
-  <tr>
-    <td><img src="folder/traço.jpg" alt="traço deitado" width="200" height="200"></td>
   </tr>
 </table>
 
