@@ -373,8 +373,8 @@ void mostrarAllPecas(Tabuleiro *tab)
             }
         }
 
-        video_box(0, 200, 110, 210, video_GREEN); // desenha o limite do linha
-        video_box(100, 0, 110, 210, video_GREEN); // desenha o limite da coluna
+        video_box(0, 200, 110, 210, video_WHITE); // desenha o limite do linha
+        video_box(100, 0, 110, 210, video_WHITE); // desenha o limite da coluna
     }
 }
 
@@ -397,7 +397,7 @@ void verificaLinhaCompleta(Tabuleiro *tab)
         if (linhaCompleta == COLUNA_TABULEIRO)
         {
             score += 10;
-            velocidade -= 3500;
+            velocidade -= 2000;
             for (j = 0; j < COLUNA_TABULEIRO; j++)
             {
                 tab->ocupado[i][j] = false; // tira os blocos da linha completa
@@ -417,26 +417,6 @@ void verificaLinhaCompleta(Tabuleiro *tab)
         }
     }
 }
-
-
-//fonte é: big;
-void desenhaText(){
-    char nomePause[7][100] = {
-"     _____    ",                 
-"    |  __ \\      ",              
-"    | |__| |_ _ _   _ ___  ___ ",
-"    |  ___/ _` | | | / __|/ _ \\ ",
-"    | |  | |_| | |_| \\__ \\  __/ ",
-"    |_|   \\__,_|\\__,_|___/\\___| ",
-"                                ",
-    };
-
-    int i = 0;
-    for (i; i < 7; i++){
-        video_text(12, i, nomePause[i]); // Desenha o caractere
-    }
-}
-
 
 int main()
 {
@@ -589,13 +569,11 @@ int main()
                 video_show();
             }
             else
-            {   
-                desenhaText();
+            {
                 KEY_read(&pause);
                 if (pause != 0)
                 {
                     valor *= -1;
-                    
                 }
             }
         }
