@@ -266,7 +266,10 @@ Oferece funções para utilização do VGA da placa para criação de gráficos,
 - **video_close()**: fecha o dispositivo de vídeo VGA.
 
 
-### Mapeamento da Memória
+### Mapeamento da Memória e utilização do protocolo I2C
+
+Inicialmente definimos constantes para facilitar o acesso aos registradores e controladores I2C e do acelerometro ADXL345. Na sequencia foi feito a abertura e mapeamento de memoria, abrimos o arquivo /dev/mem, que permite acesso à memória física do sistema. Em seguida, foi feito o mapeammmento da a memória do controlador I2C0 para um ponteiro i2c_base, permitindo que o acesso os registradores do I2C diretamente. Na sequencia O registrador IC_CON é configurado para definir o controlador I2C como mestre, configurado no modo rápido (400 kbit/s) e utilizado o endereçamento de 7 bits,  alemm de permitir condições de reinício. Isso tudo configurando o valor: 0x65 no registrador. Depois O registrador IC_TAR é configurado com o endereço do ADXL345 (0x53), que é o endereço do escravo que o controlador I2C irá se comunicar, e o controlador I2C é habilitado escrevendo 0x1 no registrador IC_ENABLE. Depois, escrevemos no registrador IC_DATA_CMD para solicitar a leitura dos dados de aceleração, começando pelo registrador 0x32 do ADXL345. E para a parte de leitura dos dados dos registradores, Um loop é usado para solicitar a leitura de 6 bytes de dados (2 bytes para cada eixo: X, Y, Z), e verificamos o registrador IC_RXFLR para garantir que 6 bytes de dados estejam prontos para leitura antes de prosseguir. E por fim, os dados de aceleração são lidos do registrador IC_DATA_CMD. Para cada eixo (X, Y, Z), dois bytes são lidos (o byte baixo primeiro, seguido pelo byte alto) e combinados para formar um valor de 16 bits.
+
 ### Telas do jogo
 
 Abaixo são apresentadas as telas de execução do jogo, pausa e fim do jogo.
