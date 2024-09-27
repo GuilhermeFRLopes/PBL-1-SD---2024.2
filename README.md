@@ -103,7 +103,8 @@ O projeto em questão faz uso de hardware específico para seu desenvolvimento, 
 
 ### Monitor de Tubo - Especificações
 
-![1708605463822](image/README/1708605463822.png)
+<img src="game%20funcionando.jpg" alt="descrição" width="400" height="300">
+
 
 |            Característica            |      Detalhes      |
 | :------------------------------------: | :----------------: |
@@ -266,8 +267,12 @@ Oferece funções para utilização do VGA da placa para criação de gráficos,
 ### Telas do jogo
 
 Abaixo são apresentadas as telas de execução do jogo, pausa e fim do jogo.
+<div style="display: flex; justify-content: space-between;">
+    <img src="game%20funcionando.jpg" alt="descrição" width="400" height="300">
+    <img src="pause.jpg" alt="descrição" width="400" height="300">
+</div>
 
-![1708711366769](image/README/1708711366769.png)![1708711382866](image/README/1708711382866.png)
+
 
 ## `Documentação utilizada`
 
@@ -283,7 +288,7 @@ Abaixo são apresentados alguns testes realizados com o proposito de verificar o
 
 Na imagem 1 é apresentada a tela de inicio com a mensagem: "---START---!", na imagem 2 é apresentada o pause durante o jogo e na terceira imagem é apresentado a tela enquanto o jogo está sendo jogado.
 
-No link a seguir são apresentados videos do funcionamento do jogo: [link aqui](https://imgur.com/a/LQylspQ)
+No link a seguir são apresentados videos do funcionamento do jogo: [link aqui](https://drive.google.com/file/d/1CHKvRcpQTJijqokOSK1fbQ3yyxPCoUO8/view?usp=sharing)
 
 ## `Dificuldades`
 
