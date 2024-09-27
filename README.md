@@ -1,4 +1,4 @@
-# Projeto de Jogo Tetris em Linguagem C
+ Projeto de Jogo Tetris em Linguagem C
 
 ## Problema | - TEC499 - MI Sistemas Digitais - 2024.2 
 
@@ -14,22 +14,24 @@ Grupo: [Guilherme Ferreira Rocha Lopes](https://github.com/GuilhermeFRLopes), [T
 4. [Metodologia](#metodologia)
 5. [Documentação Utilizada](#documentação-utilizada)
 6. [Testes realizados](#testes-realizados)
-7. [Problemas](#problemas)
+7. [Dificuldades](#dificuldades)
 8. [Execução do jogo](#execução-do-jogo)
 
-## `Introdução`
+<a id="introdução"></a>
+## Introdução
 
 Este documento descreve em detalhes o desenvolvimento de um jogo de quebra-cabeça  conhecido como Tetris. Utiliza a linguagem C e é implementado na placa de desenvolvimento modelo [DE1-SoC da terasIC](https://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&CategoryNo=167&No=836#contents).
 
 O projeto consiste em um jogo de Tetris, onde peças de diferentes formatos caem do topo do espaço de jogo. O jogador pode mover as peças horizontalmente para que se encaixem nas linhas na parte inferior da tela. Quando uma linha é completada, ela é eliminada, permitindo que novas peças continuem caindo. O jogo dispõe de opções de pausa e reinício que são acessadas através dos botões, e a exibição do jogo é feita em um monitor de tubo.
 
-## `Hardware Utilizado`
+<a id="hardware-utilizado"></a>
+## Hardware Utilizado
 
 O projeto em questão faz uso de hardware específico para seu desenvolvimento, sendo empregada uma placa de desenvolvimento DE1-SoC da terasIC . Ela é  ideal para diversos projetos de prototipagem e desenvolvimento de sistemas embarcados. Ela combina um FPGA Cyclone V SoC da Intel com um processador dual-core ARM Cortex-A9, oferecendo uma plataforma completa e flexível para implementação de hardware e software. Seu acesso para a execução do jogo é feito através da conexão via SSH (ethernet) no terminal de um computador.
 
 ### teasIC DE1-SoC - Especificações
 
-![Foto da Placa](Foto%20da%20Placa.png)
+![Foto da Placa](folder/Foto%20da%20Placa.png)
 
 | Categoria                               | Detalhes                                       |
 | --------------------------------------- | ---------------------------------------------- |
@@ -103,7 +105,7 @@ O projeto em questão faz uso de hardware específico para seu desenvolvimento, 
 
 ### Monitor de Tubo - Especificações
 
-<img src="game%20funcionando.jpg" alt="descrição" width="400" height="300">
+<img src="folder/game%20funcionando.jpg" alt="descrição" width="400" height="300">
 
 
 |            Característica            |      Detalhes      |
@@ -119,19 +121,19 @@ O projeto em questão faz uso de hardware específico para seu desenvolvimento, 
 |     **Resolução Máxima**     | 1280 x 1024 pixels |
 |    **Resolução do Display**    | 1024 x 768 pixels |
 
-## `Software utilizado`
+<a id="software-utilizado"></a>
+## Software utilizado
 
 Para o desenvolvimento e execução dos códigos, o Visual Studio Code foi utilizado como ferramenta de escrita.
 
 Visual Studio Code (VS Code): é um editor de código-fonte gratuito e de código aberto desenvolvido pela Microsoft. É multiplataforma, altamente extensível, oferece integração com Git, suporte a várias linguagens de programação, ferramentas de depuração integradas e um terminal incorporado.
 
-## `Metodologia`
+<a id="metodologia"></a>
+## Metodologia
 
-### Fluxograma do funcionamento do sistema
+### Funcionamento do sistema
 
-O fluxograma abaixo apresenta a maneira como o sistema se comporta de forma geral durante a execução do projeto:
-
-![Fluxograma do Tetris](Fluxograma%20do%20Tetris.jpg)
+A listagem abaixo apresenta a maneira como o sistema se comporta de forma geral durante a execução do projeto:
 
 **1. Inicialização:**
 
@@ -164,7 +166,7 @@ O fluxograma abaixo apresenta a maneira como o sistema se comporta de forma gera
 
 O fluxograma abaixo apresenta a maneira como o projeto do jogo foi elaborado:
 
-![Fluxograma do Tetris](Fluxograma%20do%20Tetris.jpg)
+![Fluxograma do Tetris](folder/Fluxograma%20do%20Tetris.jpg)
 
 O processo de funcionamento do jogo acontece da seguinte forma:
 
@@ -193,7 +195,7 @@ O processo de funcionamento do jogo acontece da seguinte forma:
 * O jogador pode pausar e retomar o jogo a qualquer momento pressionando qualquer botão presente na placa ([Ver imagem da placa](#teasic-de1-soc---especificações)).
 * O jogador pode resetar o jogo após mensagem de gamer over, pressionando qualquer botão presente na placa ([Ver imagem da placa](#teasic-de1-soc---especificações)).
 
-## `Solução do Problema`
+## Solução do Problema
 
 Para a solução do problema foi utilizada a linguagem de programação C, bem como a utilização da interface de desenvolvimento (IDE) Visual Studio Code, para a elaboração dos códigos fonte. O projeto foi sintetizado utilizando um computador de placa única, o DE1-Soc, ao qual foi conectado um monitor de tubo Dell para exibição do jogo.
 
@@ -201,7 +203,6 @@ Para a solução do problema foi utilizada a linguagem de programação C, bem c
 
 Para auxiliar no desenvolvimento do código em C do Jogo foram utilizadas as seguintes bibliotecas: **Stdio**, **stdlib**, **stdint**, **time**, **sys/mman**, **fcntl**, **Stdbool**, **Intelfpgaup/KEY** e **Intelfpgaup/video**.
 
-```
 ├── stdio.h
 ├── stdlib.h
 ├── stdint.h
@@ -211,7 +212,7 @@ Para auxiliar no desenvolvimento do código em C do Jogo foram utilizadas as seg
 ├── stdbool.h
 ├── intelfpgaup/KEY.h
 ├── intelfpgaup/video.h
-```
+
 
 As bibliotecas **Stdio** **stdlib**, **stdint**, **time**, **Stdbool** fornecem funções para diversas tarefas em C, como manipulação de entrada/saída, operações de baixo nível em sistemas Unix-like e tipos booleanos.
 
@@ -219,11 +220,11 @@ As bibliotecas **Stdio** **stdlib**, **stdint**, **time**, **Stdbool** fornecem 
 
 Essa biblioteca fornece funções para gerenciamento de memória, especialmente para mapeamento de arquivos ou dispositivos na memória. As principais funções dessa biblioteca incluem:
 
-- **`mmap()`**: Permite mapear arquivos ou dispositivos para a memória do processo, facilitando o acesso aos dados sem precisar usar funções tradicionais de leitura e escrita. Isso é útil para melhorar o desempenho ao trabalhar com grandes quantidades de dados.
+- **mmap()**: Permite mapear arquivos ou dispositivos para a memória do processo, facilitando o acesso aos dados sem precisar usar funções tradicionais de leitura e escrita. Isso é útil para melhorar o desempenho ao trabalhar com grandes quantidades de dados.
 
-- **`munmap():`**: Desfaz o mapeamento de um bloco de memória previamente mapeado.
+- **munmap():**: Desfaz o mapeamento de um bloco de memória previamente mapeado.
 
-- **`mprotect()`**: Modifica as permissões de acesso a um bloco de memória.
+- **mprotect()**: Modifica as permissões de acesso a um bloco de memória.
 
 * Essa biblioteca é frequentemente usada em aplicações que exigem acesso  rápido e eficiente a grandes volumes de dados ou para manipulação direta  de memória.
 
@@ -231,84 +232,106 @@ Essa biblioteca fornece funções para gerenciamento de memória, especialmente 
 
 Essa biblioteca contém definições relacionadas a arquivos e controladores de entrada/saída. As principais funções e constantes que ela oferece incluem:
 
-- **`open`**: Abre um arquivo ou dispositivo, retornando um descritor de arquivo que pode ser usado para operações de leitura, escrita e controle.
+- **open**: Abre um arquivo ou dispositivo, retornando um descritor de arquivo que pode ser usado para operações de leitura, escrita e controle.
 
-- **`O_CREAT`, `O_RDONLY`, `O_WRONLY`, `O_RDWR`, etc.**: Constantes usadas como flags para especificar como o arquivo deve ser aberto (por exemplo, se ele deve ser criado, se deve ser aberto apenas para leitura, etc.).
+- **O_CREAT, O_RDONLY, O_WRONLY, O_RDWR, etc.**: Constantes usadas como flags para especificar como o arquivo deve ser aberto (por exemplo, se ele deve ser criado, se deve ser aberto apenas para leitura, etc.).
 
-- **`fcntl`**: Permite modificar propriedades de um descritor de arquivo, como bloqueios ou modos de operação.
+- **fcntl**: Permite modificar propriedades de um descritor de arquivo, como bloqueios ou modos de operação.
 
 
 ### #include <intelfpgaup/KEY.h>
 
 Oferece funções para a utilização dos botões (KEYS) da placa tais como as utilizadas:
 
-- **`KEY_open()`**: abre o dispositivo para os botões;
-- **`KEY_read()`**: lê as entradas recebidas pelo dispositivo para os botões;
-- **`KEY_close()`**: fecha o dispositivo para os botões.
+- **KEY_open()**: abre o dispositivo para os botões;
+- **KEY_read()**: lê as entradas recebidas pelo dispositivo para os botões;
+- **KEY_close()**: fecha o dispositivo para os botões.
 
 ### #include <intelfpgaup/video.h>
 
 Oferece funções para utilização do VGA da placa para criação de gráficos, com funções para desenho de linhas, retângulos e texto. As utilizadas foram:
 
-- **`video_open()`**: abre o dispositivo de vídeo VGA;
+- **video_open()**: abre o dispositivo de vídeo VGA;
 
-- **`video_erase()`**: limpa todos e apenas os textos que estivessem escritos na tela;
+- **video_erase()**: limpa todos e apenas os textos que estivessem escritos na tela;
 
-- **`video_clear()`**: limpa todas as imagens que estivessem exibidas na tela;
+- **video_clear()**: limpa todas as imagens que estivessem exibidas na tela;
 
-- **`video_show()`**: exibe na tela todos os elementos dispostos no buffer de video, tais como textos ou desenhos (linhas ou retângulos/boxes);
+- **video_show()**: exibe na tela todos os elementos dispostos no buffer de video, tais como textos ou desenhos (linhas ou retângulos/boxes);
 
-- **`video_text()`**: dispõe no buffer de vídeo um texto de tamanho fixo a ser exibido na tela, selecionando-se sua posição em eixos X e Y;
+- **video_text()**: dispõe no buffer de vídeo um texto de tamanho fixo a ser exibido na tela, selecionando-se sua posição em eixos X e Y;
 
-- **`video_box()`**: dispõe no buffer de vídeo um retângulo/box a ser exibido na tela, selecionando-se os pontos iniciais e finais em coordenadas de X e Y e a cor da figura a ser gerada;
+- **video_box()**: dispõe no buffer de vídeo um retângulo/box a ser exibido na tela, selecionando-se os pontos iniciais e finais em coordenadas de X e Y e a cor da figura a ser gerada;
 
-- **`video_close()`**: fecha o dispositivo de vídeo VGA.
+- **video_close()**: fecha o dispositivo de vídeo VGA.
 
+
+### Mapeamento da Memória
 ### Telas do jogo
 
 Abaixo são apresentadas as telas de execução do jogo, pausa e fim do jogo.
 <div style="display: flex; justify-content: space-between;">
-    <img src="game%20funcionando.jpg" alt="descrição" width="400" height="300">
-    <img src="pause.jpg" alt="descrição" width="400" height="300">
+    <img src="folder/game%20funcionando.jpg" alt="descrição" width="400" height="300">
+    <img src="folder/pause.jpg" alt="descrição" width="400" height="300">
+    <img src="folder/pause.jpg" alt="descrição" width="400" height="300">
+
 </div>
 
 
 
-## `Documentação utilizada`
+<a id="documentação-utilizada"></a>
+## Documentação utilizada
 
 [**Manual de usuário da placa de desenvolvimento DE1-SoC:** ](https://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&CategoryNo=167&No=836&PartNo=4#contents)Contém todas as informações relacionadas ao funcionamento da DE1-SoC, bem como são realizadas a integração da placa com demais recursos (video externo e acelerômetro).
 
 **[Manual de funções do Linux no ARM A9](https://fpgacademy.org/tutorials.html):** Utilizado para consulta das funções que foram implementadas no código fonte do jogo.
 
-## `Testes Realizados`
+<a id="testes-realizados"></a>
+## Testes Realizados
 
 Abaixo são apresentados alguns testes realizados com o proposito de verificar o funcionamento do projeto:
 
 <div style="display: flex; justify-content: space-between;">
-    <img src="teste%20tabuleiro.jpg" alt="descrição" width="300" height="200">
-    <img src="teste%20colisao.jpg" alt="descrição" width="300" height="200">
-    <img src="teste.jpg" alt="descrição" width="300" height="200">  
+    <img src="folder/teste%20tabuleiro.jpg" alt="descrição" width="300" height="200">
+    <img src="folder/teste%20colisao.jpg" alt="descrição" width="300" height="200">
+    <img src="folder/teste.jpg" alt="descrição" width="300" height="200">  
 </div>
 
-## `Peças do jogo`
-<div style="display: flex; justify-content: space-between;">
-    <img src="teste%20tabuleiro.jpg" alt="descrição" width="300" height="200">
-    <img src="teste%20colisao.jpg" alt="descrição" width="300" height="200">
-    <img src="teste.jpg" alt="descrição" width="300" height="200">  
-</div>
-Abaixo são apresentadas todas as peças possíveis no jogo
-Na imagem 1 é apresentada a tela de inicio com a mensagem: "---START---!", na imagem 2 é apresentada o pause durante o jogo e na terceira imagem é apresentado a tela enquanto o jogo está sendo jogado.
+<h2>Peças do jogo</h2>
+<p>
+    Abaixo são apresentadas todas as peças possíveis no jogo. O formato das peças indicam letras e certos formatos, O, T, I, L, J, Z, S, um formato com 4 linhas e 1 coluna e um formato de 4 colunas e 1 linha, totalizando 10 peças.
+</p>
+<table>
+  <tr>
+    <td><img src="folder/peça%20j%20invertida.jpg" alt="peça j invertida" width="200" height="200"></td>
+    <td><img src="folder/peça%20j.jpg" alt="peça j" width="200" height="200"></td>
+    <td><img src="folder/Peça%20L%20deitada.jpg" alt="peça L deitada" width="200" height="200"></td>
+  </tr>
+  <tr>
+    <td><img src="folder/peça%20l%20invertida.jpg" alt="peça L invertida" width="200" height="200"></td>
+    <td><img src="folder/peça%20L.jpg" alt="peça L" width="200" height="200"></td>
+    <td><img src="folder/peça%20O.jpg" alt="peça O" width="200" height="200"></td>
+  </tr>
+  <tr>
+    <td><img src="folder/peça%20T.jpg" alt="peça T" width="200" height="200"></td>
+    <td><img src="folder/peça%20T%20deitada.jpg" alt="peça T deitada" width="200" height="200"></td>
+    <td><img src="folder/traço%20em%20pé.jpg" alt="traço em pé" width="200" height="200"></td>
+  </tr>
+  <tr>
+    <td><img src="folder/traço.jpg" alt="traço deitado" width="200" height="200"></td>
+  </tr>
+</table>
 
 No link a seguir são apresentados videos do funcionamento do jogo: [link aqui](https://drive.google.com/file/d/1CHKvRcpQTJijqokOSK1fbQ3yyxPCoUO8/view?usp=sharing)
 
-## `Dificuldades`
+<a id="dificuldades"></a>
+## Dificuldades
 
 Inicialmente, optamos pelo desenvolvimento da lógica do jogo, no qual foram propostas ideias sobre como seria o posicionamento das peças. A partir de várias tentativas, consolidamos o uso de uma matriz que permitisse o posicionamento correto das peças, tendo como base as linhas e colunas que proporcionam a ação ideal para a geração precisa dos pixels do bloco. Após isso, concluímos essa etapa e passamos para o desenvolvimento da biblioteca do acelerômetro. A documentação fornecida (**[Manual de funções do Linux no ARM A9](https://fpgacademy.org)**) foi de extrema importância para o entendimento e mapeamento correto dos registradores, além de providenciar funções imprescindíveis e bem detalhadas para a aplicação adequada ao problema.
 
-## `Execução do jogo`
+<a id="execucao-do-jogo"></a>
+## Execução do jogo
 
 Em posse do código desse repositório e de uma placa de desenvolvimento DE1-SoC conectada a um monitor, para testar o funcionamento do programa, conecte a placa com um computador e execute o seguinte comando no terminal:
 
-```
 make all
-```
