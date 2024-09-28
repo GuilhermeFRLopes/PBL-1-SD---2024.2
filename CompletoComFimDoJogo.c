@@ -84,7 +84,7 @@ Peca criarPecasAleatorias()
     short cor = corAleatoria();
 
     // Gera um número aleatório para escolher a peça
-    int tipoPeca = rand() % 10;
+    int tipoPeca = rand() % 9;
 
     Peca peca;
     peca.pos_x = (60) - (BLOCO_TAM * 1); // Centraliza a peça
@@ -106,11 +106,11 @@ Peca criarPecasAleatorias()
     // Define a forma da peça com base no número aleatório
     switch (tipoPeca)
     {
-    case 0: // Peça "Z"
+    case 0: // Peça "I"
         peca.quadrados[0][1].ativo = true;
         peca.quadrados[1][1].ativo = true;
-        peca.quadrados[1][2].ativo = true;
-        peca.quadrados[2][2].ativo = true;
+        peca.quadrados[2][1].ativo = true;
+        peca.quadrados[3][1].ativo = true;
         break;
     case 1: // Peça "O"
         peca.quadrados[1][1].ativo = true;
@@ -136,7 +136,12 @@ Peca criarPecasAleatorias()
         peca.quadrados[2][1].ativo = true;
         peca.quadrados[2][0].ativo = true;
         break;
-    case 5: // Peça "I"
+    case 5: // Peça "Z"
+        peca.quadrados[0][1].ativo = true;
+        peca.quadrados[1][1].ativo = true;
+        peca.quadrados[1][2].ativo = true;
+        peca.quadrados[2][2].ativo = true;
+        break;
         peca.quadrados[0][1].ativo = true;
         peca.quadrados[1][1].ativo = true;
         peca.quadrados[2][1].ativo = true;
@@ -159,12 +164,6 @@ Peca criarPecasAleatorias()
         peca.quadrados[1][1].ativo = true;
         peca.quadrados[1][2].ativo = true;
         peca.quadrados[0][1].ativo = true;
-        break;
-    case 9: // Peça "0"
-        peca.quadrados[1][1].ativo = true;
-        peca.quadrados[1][2].ativo = true;
-        peca.quadrados[2][1].ativo = true;
-        peca.quadrados[2][2].ativo = true;
         break;
     }
     // Define a cor para os quadrados ativos
@@ -331,42 +330,46 @@ void mostrarAllPecas(Tabuleiro *tab)
     }
 }
 
-void verificaLinhaCompleta(Tabuleiro *tab)
-{
-    int linhaCompleta, i, j, p, k;
+void verificaLinhaCompleta(Tabuleiro *tab) {
+    // Começa de baixo para cima
+    for (int i = LINHA_TABULEIRO - 1; i >= 0; i--) {
+        bool linhaCompleta = true;
 
-    for (i = 0; i < LINHA_TABULEIRO; i++)
-    {
-        linhaCompleta = 0;
-
-        for (j = 0; j < COLUNA_TABULEIRO; j++)
-        {
-            if (tab->ocupado[i][j] == true)
-            {
-                linhaCompleta += 1;
+        // Verifica se a linha está completa
+        for (int j = 0; j < COLUNA_TABULEIRO; j++) {
+            if (!tab->ocupado[i][j]) {  // Se encontrar um espaço vazio
+                linhaCompleta = false;
+                break;
             }
         }
 
-        if (linhaCompleta == COLUNA_TABULEIRO)
-        {
+        // Se a linha estiver completa
+        if (linhaCompleta) {
+            // Aumenta a pontuação e diminui a velocidade
             score += 10;
             velocidade -= 3500;
-            for (j = 0; j < COLUNA_TABULEIRO; j++)
-            {
-                tab->ocupado[i][j] = false; // tira os blocos da linha completa
+
+            // Desocupa a linha completa
+            for (int j = 0; j < COLUNA_TABULEIRO; j++) {
+                tab->ocupado[i][j] = false;
             }
 
-            for (p = i - 1; p >= 0; p--) // move de cima para baixo
-            {
-                for (k = 0; k < COLUNA_TABULEIRO; k++)
-                {
-                    if (tab->ocupado[p][k] == true)
-                    {
-                        tab->ocupado[p + 1][k] = tab->ocupado[p][k]; // faz com que desça o bloco para a linha que foi desocupada
-                        tab->ocupado[p][k] = false;
-                    }
+            // Mover todas as linhas acima para baixo
+            for (int p = i; p > 0; p--) {
+                for (int k = 0; k < COLUNA_TABULEIRO; k++) {
+                    // Move a linha acima para a linha atual
+                    tab->ocupado[p][k] = tab->ocupado[p-1][k];
+                    tab->cor[p][k] = tab->cor[p-1][k];
                 }
             }
+
+            // Após mover as linhas, limpar a primeira linha (que não tem nada acima)
+            for (int k = 0; k < COLUNA_TABULEIRO; k++) {
+                tab->ocupado[0][k] = false;
+            }
+
+            // Como a linha atual foi preenchida e removida, devemos verificar a mesma linha novamente
+            i++;
         }
     }
 }
