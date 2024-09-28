@@ -331,7 +331,7 @@ void mostrarAllPecas(Tabuleiro *tab)
 }
 
 void verificaLinhaCompleta(Tabuleiro *tab) {
-    // Começa de baixo para cima
+    // começa de baixo para cima
     for (int i = LINHA_TABULEIRO - 1; i >= 0; i--) {
         bool linhaCompleta = true;
 
